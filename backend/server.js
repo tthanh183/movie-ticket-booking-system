@@ -3,19 +3,22 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
+import authRoutes from './routes/auth.route.js';
+
 import { connectDB } from './lib/db.js';
 import errorHandler from './middlewares/errorHandler.middleware.js';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 const __dirname = path.resolve();
 
 app.use(express.json({ limit: '10mb' }));
-app.use(cookieParser);
+app.use(cookieParser());
 
+app.use('/api/auth', authRoutes);
 app.use(errorHandler);
 
 if (process.env.NODE_ENV === 'production') {
