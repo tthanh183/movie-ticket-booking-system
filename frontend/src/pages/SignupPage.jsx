@@ -54,7 +54,7 @@ const SignupPage = () => {
             <Input
               size="lg"
               placeholder="John Doe"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              className="!border-blue-gray-200 focus:!border-blue-500"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
@@ -71,7 +71,7 @@ const SignupPage = () => {
             <Input
               size="lg"
               placeholder="name@mail.com"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              className="!border-blue-gray-200 focus:!border-blue-500"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
@@ -89,7 +89,7 @@ const SignupPage = () => {
               type="password"
               size="lg"
               placeholder="********"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              className="!border-blue-gray-200 focus:!border-blue-500"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
@@ -107,7 +107,7 @@ const SignupPage = () => {
               type="password"
               size="lg"
               placeholder="********"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              className="!border-blue-gray-200 focus:!border-blue-500"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}

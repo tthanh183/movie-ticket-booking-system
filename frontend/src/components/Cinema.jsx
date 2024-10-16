@@ -1,7 +1,7 @@
 import { Button, Card, Typography } from '@material-tailwind/react';
 
 const Cinema = () => {
-  
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen ">
       <div className="text-center mb-6">
@@ -10,7 +10,6 @@ const Cinema = () => {
         </Typography>
       </div>
 
-      {/* Buttons for Create and View Cinemas */}
       <div className="flex justify-center space-x-4 mb-8">
         <Button color="blue" size="lg" className="hover:bg-blue-700">
           + Create Cinema
@@ -20,7 +19,6 @@ const Cinema = () => {
         </Button>
       </div>
 
-      {/* Cinema Form */}
       <Card shadow={true} className="p-6 max-w-lg mx-auto bg-white">
         <Typography variant="h5" color="blue-gray" className="mb-4">
           Create New Cinema

@@ -52,7 +52,7 @@ const LoginPage = () => {
             <Input
               size="lg"
               placeholder="Email"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              className="!border-blue-gray-200 focus:!border-blue-500"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
@@ -70,7 +70,7 @@ const LoginPage = () => {
               type="password"
               size="lg"
               placeholder="Password"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              className="!border-blue-gray-200 focus:!border-blue-500"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
