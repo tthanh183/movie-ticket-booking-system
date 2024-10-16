@@ -16,7 +16,6 @@ export const getAllCinemas = async (req, res, next) => {
 
 export const getCinemaById = async (req, res, next) => {
   const { cinemaId } = req.params;
-  console.log('cinemaId', cinemaId);
 
   try {
     const cinema = await Cinema.findById(cinemaId);

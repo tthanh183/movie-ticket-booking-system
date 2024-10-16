@@ -5,6 +5,7 @@ import path from 'path';
 
 import authRoutes from './routes/auth.route.js';
 import cinemaRoutes from './routes/cinema.route.js';
+import cinemaHallRoutes from './routes/cinemaHall.route.js';
 
 import { connectDB } from './lib/db.js';
 import errorHandler from './middlewares/errorHandler.middleware.js';
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/cinemas', cinemaRoutes);
+app.use('/api/cinemaHalls', cinemaHallRoutes);
 
 app.use(errorHandler);
 
