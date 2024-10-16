@@ -21,7 +21,7 @@ export const useUserStore = create((set, get) => ({
         password,
       });
       if (response.data.success) {
-        set({ user: response.data.user });
+        set({ user: response.data.user, loading: false });
         toast.success(response.data.message);
       } else {
         toast.error('Signup failed. Please try again.');
@@ -35,15 +35,16 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  login: async ({email, password}) => {
+  login: async ({ email, password }) => {
     set({ loading: true });
     try {
       const response = await axiosInstance.post('/auth/login', {
         email,
         password,
       });
+
       if (response.data.success) {
-        set({ user: response.data.user });
+        set({ user: response.data.user, loading: false });
         toast.success(response.data.message);
       } else {
         toast.error('Login failed. Please try again.');
@@ -65,7 +66,8 @@ export const useUserStore = create((set, get) => ({
       toast.error(
         error.response.data.message ||
           'Something went wrong. Please try again later.'
-      );
+      , { duration: 2000 });
+      set({ loading: false });
     }
   },
 
@@ -77,10 +79,7 @@ export const useUserStore = create((set, get) => ({
         set({ user: response.data.user, checkingAuth: false });
       }
     } catch (error) {
-      toast.error(
-        error.response.data.message ||
-          'Something went wrong. Please try again later.'
-      );
+      console.log(error.message);
       set({ user: null, checkingAuth: false });
     }
   },

@@ -8,6 +8,7 @@ import Header from './components/Header';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AdminPage from './pages/AdminPage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -43,6 +44,7 @@ function App() {
           }
         />
       </Routes>
+      <Toaster />
     </div>
   );
 }

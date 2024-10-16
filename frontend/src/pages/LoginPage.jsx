@@ -17,7 +17,6 @@ const LoginPage = () => {
   const handleSubmit = e => {
     e.preventDefault();
     console.log(inputs);
-
     login(inputs);
   };
 
