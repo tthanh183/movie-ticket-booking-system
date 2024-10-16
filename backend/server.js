@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 
 import authRoutes from './routes/auth.route.js';
+import cinemaRoutes from './routes/cinema.route.js';
 
 import { connectDB } from './lib/db.js';
 import errorHandler from './middlewares/errorHandler.middleware.js';
@@ -19,6 +20,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/cinemas', cinemaRoutes);
+
 app.use(errorHandler);
 
 if (process.env.NODE_ENV === 'production') {

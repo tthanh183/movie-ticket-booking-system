@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import User from '../models/user.model.js';
+import errorCreator from '../utils/errorCreator.js';
 
 export const protectRoute = async (req, res, next) => {
   try {
