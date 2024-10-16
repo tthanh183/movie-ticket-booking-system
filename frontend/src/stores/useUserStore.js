@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import axiosInstance from '../lib/axiosInstance';
-import toast from 'react-hot-toast';
+import showToast from '../lib/showToast';
 
 export const useUserStore = create((set, get) => ({
   user: null,
@@ -10,7 +10,7 @@ export const useUserStore = create((set, get) => ({
   signup: async ({ name, email, password, confirmPassword }) => {
     set({ loading: true });
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      showToast('Passwords do not match.', 'error');
       set({ loading: false });
       return;
     }
@@ -22,12 +22,12 @@ export const useUserStore = create((set, get) => ({
       });
       if (response.data.success) {
         set({ user: response.data.user, loading: false });
-        toast.success(response.data.message);
+        showToast(response.data.message, 'success');
       } else {
-        toast.error('Signup failed. Please try again.');
+        showToast('Signup failed. Please try again.', 'error');
       }
     } catch (error) {
-      toast.error(
+      showToast(
         error.response.data.message ||
           'Something went wrong. Please try again later.'
       );
@@ -45,12 +45,12 @@ export const useUserStore = create((set, get) => ({
 
       if (response.data.success) {
         set({ user: response.data.user, loading: false });
-        toast.success(response.data.message);
+        showToast(response.data.message, 'success');
       } else {
-        toast.error('Login failed. Please try again.');
+        showToast('Login failed. Please try again.', 'error');
       }
     } catch (error) {
-      toast.error(
+      showToast(
         error.response.data.message ||
           'Something went wrong. Please try again later.'
       );
@@ -63,10 +63,10 @@ export const useUserStore = create((set, get) => ({
       await axiosInstance.post('/auth/logout');
       set({ user: null });
     } catch (error) {
-      toast.error(
+      showToast(
         error.response.data.message ||
           'Something went wrong. Please try again later.'
-      , { duration: 2000 });
+      );
       set({ loading: false });
     }
   },
@@ -94,7 +94,7 @@ export const useUserStore = create((set, get) => ({
       }
       return response.data;
     } catch (error) {
-      toast.error(
+      showToast(
         error.response.data.message ||
           'Something went wrong. Please try again later.'
       );
