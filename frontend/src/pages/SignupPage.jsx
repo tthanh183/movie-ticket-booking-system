@@ -29,15 +29,26 @@ const SignupPage = () => {
         shadow={true}
         className="p-8 w-full max-w-md md:max-w-lg lg:max-w-xl"
       >
-        <Typography variant="h4" color="blue-gray" className="text-center">
+        <Typography
+          variant="h4"
+          color="blue-gray"
+          className="text-center text-black"
+        >
           Create your account
         </Typography>
-        <Typography color="gray" className="mt-1 font-normal text-center">
+        <Typography
+          color="gray"
+          className="mt-1 font-normal text-center text-black"
+        >
           Nice to meet you! Enter your details to sign up.
         </Typography>
         <form className="mt-8 mb-2" onSubmit={handleSubmit}>
           <div className="mb-4 flex flex-col gap-6">
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3 text-black"
+            >
               Full name
             </Typography>
             <Input
@@ -50,7 +61,11 @@ const SignupPage = () => {
               name="name"
               onChange={handleChange}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3 text-black"
+            >
               Email
             </Typography>
             <Input
@@ -63,7 +78,11 @@ const SignupPage = () => {
               name="email"
               onChange={handleChange}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3 text-black"
+            >
               Password
             </Typography>
             <Input
@@ -77,7 +96,11 @@ const SignupPage = () => {
               name="password"
               onChange={handleChange}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3 text-black"
+            >
               Confirm Password
             </Typography>
             <Input
@@ -92,10 +115,18 @@ const SignupPage = () => {
               onChange={handleChange}
             />
           </div>
-          <Button className="mt-6" fullWidth disabled={loading} type="submit">
+          <Button
+            className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            fullWidth
+            disabled={loading}
+            type="submit"
+          >
             {loading ? 'Loading...' : 'Sign up'}
           </Button>
-          <Typography color="gray" className="mt-4 text-center font-normal">
+          <Typography
+            color="gray"
+            className="mt-4 text-center font-normal text-black"
+          >
             Already have an account?{' '}
             <a
               href="/login"

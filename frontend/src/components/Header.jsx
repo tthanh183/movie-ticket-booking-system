@@ -53,7 +53,7 @@ const Header = () => {
             </Typography>
           </Link>
           {isAdmin && (
-            <Link to="/admin/dashboard">
+            <Link to="/admin">
               <Typography
                 variant="small"
                 color="blue-gray"
@@ -66,7 +66,7 @@ const Header = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="size-4"
+                    className="w-5 h-5"
                   >
                     <path
                       strokeLinecap="round"
@@ -74,7 +74,7 @@ const Header = () => {
                       d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
                     />
                   </svg>
-                  Dashboard
+                  Admin
                 </ListItem>
               </Typography>
             </Link>
@@ -88,9 +88,9 @@ const Header = () => {
                 href="#"
                 variant="small"
                 color="blue-gray"
-                className="flex items-center gap-x-2 p-1 font-medium text-black hover:text-gray-400"
+                className="flex items-center gap-x-2 font-medium text-black hover:text-gray-400"
               >
-                <ListItem className="flex items-center gap-2 py-2 pr-1">
+                <ListItem className="flex items-center gap-2 py-2 pr-3">
                   <svg
                     width="16"
                     height="17"

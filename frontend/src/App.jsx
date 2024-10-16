@@ -7,8 +7,8 @@ import HomePage from './pages/HomePage';
 import Header from './components/Header';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import AdminPage from './pages/AdminPage';
 import { Toaster } from 'react-hot-toast';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -38,7 +38,7 @@ function App() {
           element={!user ? <SignupPage /> : <Navigate to={'/'} />}
         />
         <Route
-          path="/dashboard"
+          path="/admin"
           element={
             user?.role === 'admin' ? <AdminPage /> : <Navigate to={'/login'} />
           }
