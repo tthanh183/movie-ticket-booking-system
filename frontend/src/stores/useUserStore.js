@@ -1,6 +1,13 @@
 import { create } from 'zustand';
-import axiosInstance from '../lib/axiosInstance';
 import showToast from '../lib/showToast';
+import {
+  signupApi,
+  loginApi,
+  logoutApi,
+  checkAuthApi,
+  refreshTokenApi,
+} from '../api/authApi';
+import axiosInstance from '../lib/axiosInstance';
 
 export const useUserStore = create((set, get) => ({
   user: null,
@@ -15,11 +22,7 @@ export const useUserStore = create((set, get) => ({
       return;
     }
     try {
-      const response = await axiosInstance.post('/auth/signup', {
-        name,
-        email,
-        password,
-      });
+      const response = await signupApi({ name, email, password });
       if (response.data.success) {
         set({ user: response.data.user, loading: false });
         showToast(response.data.message, 'success');
@@ -38,11 +41,7 @@ export const useUserStore = create((set, get) => ({
   login: async ({ email, password }) => {
     set({ loading: true });
     try {
-      const response = await axiosInstance.post('/auth/login', {
-        email,
-        password,
-      });
-
+      const response = await loginApi({ email, password });
       if (response.data.success) {
         set({ user: response.data.user, loading: false });
         showToast(response.data.message, 'success');
@@ -60,7 +59,7 @@ export const useUserStore = create((set, get) => ({
 
   logout: async () => {
     try {
-      await axiosInstance.post('/auth/logout');
+      await logoutApi();
       set({ user: null });
     } catch (error) {
       showToast(
@@ -74,7 +73,7 @@ export const useUserStore = create((set, get) => ({
   checkAuth: async () => {
     set({ checkingAuth: true });
     try {
-      const response = await axiosInstance.get('/auth/profile');
+      const response = await checkAuthApi();
       if (response.data.success) {
         set({ user: response.data.user, checkingAuth: false });
       }
@@ -88,7 +87,7 @@ export const useUserStore = create((set, get) => ({
     if (get().checkingAuth) return;
     set({ checkingAuth: true });
     try {
-      const response = await axiosInstance.post('/auth/refresh-token');
+      const response = await refreshTokenApi();
       if (response.data.success) {
         set({ checkingAuth: false });
       }

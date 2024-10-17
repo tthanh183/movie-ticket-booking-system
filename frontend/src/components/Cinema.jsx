@@ -1,6 +1,33 @@
 import { Button, Card, Typography } from '@material-tailwind/react';
+import { useState } from 'react';
+import axiosInstance from '../lib/axiosInstance';
 
+const location = [
+  'Hồ Chí Minh',
+  'Hà Nội',
+  'Đà Nẵng',
+  'Cần Thơ',
+  'Hải Phòng',
+  'Quảng Ninh',
+];
 const Cinema = () => {
+  const [cinemas, setCinemas] = useState({
+    name: '',
+    location: '',
+    address: '',
+  });
+
+  const handleChange = e => {
+    setCinemas({
+      ...cinemas,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    
+  };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen ">
@@ -32,57 +59,53 @@ const Cinema = () => {
               type="text"
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter cinema name"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Description
-            </label>
-            <textarea
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter description"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Location
-            </label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter cinema location"
+              name="name"
+              onChange={handleChange}
+              value={cinemas.name}
             />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1 text-gray-700">
               Category
             </label>
-            <select className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option>Select a category</option>
-              <option>Standard</option>
-              <option>VIP</option>
+            <select
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
+              value={cinemas.location}
+              name="location"
+            >
+              <option value="" disabled>
+                Select a location
+              </option>
+              {location.map(loc => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
             </select>
           </div>
-
-          {/* Upload Image (Optional) */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1 text-gray-700">
-              Upload Image
+              Address
             </label>
             <input
-              type="file"
+              type="text"
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter cinema location"
+              name="address"
+              onChange={handleChange}
+              value={cinemas.address}
             />
           </div>
 
-          {/* Submit Button */}
           <Button
             color="blue"
             size="lg"
             fullWidth
             className="hover:bg-blue-700"
+            onClick={handleSubmit}
           >
-            + Create Cinema
+            Create Cinema
           </Button>
         </form>
       </Card>
