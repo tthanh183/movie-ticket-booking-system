@@ -38,6 +38,7 @@ export const createCinema = async (req, res, next) => {
     const cinema = await Cinema.create({ name, location, address, totalHalls });
     res.status(201).json({
       success: true,
+      message: 'Cinema created successfully',
       cinema,
     });
   } catch (error) {
@@ -64,6 +65,7 @@ export const updateCinema = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: 'Cinema updated successfully',
       cinema,
     });
   } catch (error) {

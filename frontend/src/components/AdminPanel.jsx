@@ -1,5 +1,6 @@
 import Cinema from './Cinema';
 
+// eslint-disable-next-line react/prop-types
 const AdminPanel = ({ selected }) => {
   return (
     <div className="flex-1 p-6 bg-gray-100">
