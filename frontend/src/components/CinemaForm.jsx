@@ -12,6 +12,7 @@ const locations = [
   'Quảng Ninh',
 ];
 
+// eslint-disable-next-line react/prop-types
 const CinemaForm = ({ cinema = null, onCancel }) => {
   const [formData, setFormData] = useState({
     name: '',

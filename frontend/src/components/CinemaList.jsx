@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { getAllCinemasApi, deleteCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
 
+// eslint-disable-next-line react/prop-types
 const CinemaList = ({ onEdit }) => {
   const [cinemas, setCinemas] = useState({});
   const [open, setOpen] = useState(false); 
@@ -65,6 +66,7 @@ const CinemaList = ({ onEdit }) => {
         );
         closeDeleteModal(); 
       }
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       showToast('Failed to delete cinema', 'error');
     }

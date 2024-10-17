@@ -25,14 +25,13 @@ import {
   BuildingOffice2Icon,
 } from '@heroicons/react/24/outline';
 
-const Sidebar = ({setSelected}) => {
+// eslint-disable-next-line react/prop-types
+const Sidebar = ({ setSelectedTab }) => {
   const [open, setOpen] = useState(0);
 
   const handleOpen = value => {
     setOpen(open === value ? 0 : value);
   };
-
-  const handleSelected = value => {};
 
   return (
     <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 mt-4 shadow-none">
@@ -100,7 +99,7 @@ const Sidebar = ({setSelected}) => {
             />
           }
         >
-          <ListItem onClick={setSelected('Cinemas')}>
+          <ListItem onClick={setSelectedTab('Cinemas')}>
             <ListItemPrefix>
               <BuildingOfficeIcon className="h-5 w-5" />
             </ListItemPrefix>

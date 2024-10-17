@@ -18,6 +18,11 @@ const cinemaHallSchema = new mongoose.Schema(
       required: [true, 'Total seats is required'],
       default: 100,
     },
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'maintenance'],
+      default: 'active',
+    },
   },
   { timestamps: true }
 );

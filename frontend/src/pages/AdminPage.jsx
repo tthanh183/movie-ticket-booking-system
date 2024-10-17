@@ -3,11 +3,11 @@ import Sidebar from '../components/Sidebar';
 import AdminPanel from '../components/AdminPanel';
 
 const AdminPage = () => {
-  const [selected, setSelected] = useState('Dashboard');
+  const [selectedTab, setSelectedTab] = useState('Dashboard');
   return (
     <div className="flex">
-      <Sidebar setSelected={setSelected} />
-      <AdminPanel selected={selected} />
+      <Sidebar setSelectedTab={setSelectedTab} />
+      <AdminPanel selectedTab={selectedTab} />
     </div>
   );
 };
