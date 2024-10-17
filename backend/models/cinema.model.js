@@ -1,11 +1,15 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
 const cinemaSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, 'Name is required'],
+      trim: true,
+    },
+    location: {
+      type: String,
+      required: [true, 'Location is required'],
       trim: true,
     },
     address: {

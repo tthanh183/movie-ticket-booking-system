@@ -33,9 +33,9 @@ export const getCinemaById = async (req, res, next) => {
 };
 
 export const createCinema = async (req, res, next) => {
-  const { name, address, totalHalls } = req.body;
+  const { name, location, address, totalHalls } = req.body;
   try {
-    const cinema = await Cinema.create({ name, address, totalHalls });
+    const cinema = await Cinema.create({ name, location, address, totalHalls });
     res.status(201).json({
       success: true,
       cinema,
