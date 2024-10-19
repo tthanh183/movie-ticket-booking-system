@@ -1,22 +1,56 @@
+import { useEffect, useState } from 'react';
 import { Button, Typography } from '@material-tailwind/react';
-import { useState } from 'react';
+
+import { getAllCinemasApi } from '../api/cinemaApi';
 import CinemaForm from './CinemaForm';
 import CinemaList from './CinemaList';
 
 const Cinema = () => {
-  const [view, setView] = useState('view'); 
-  const [editCinema, setEditCinema] = useState(null); 
+  const [cinemas, setCinemas] = useState({});
+  const [editCinema, setEditCinema] = useState(null);
+  const [openForm, setOpenForm] = useState(false);
 
-  const handleSwitchView = view => {
-    setView(view);
-    if (view !== 'edit') {
-      setEditCinema(null); 
+  useEffect(() => {
+    fetchCinemas();
+  }, []);
+
+  const fetchCinemas = async () => {
+    try {
+      const response = await getAllCinemasApi();
+      if (response.data.success) {
+        const groupedByLocation = response.data.cinemas.reduce(
+          (acc, cinema) => {
+            if (!acc[cinema.location]) acc[cinema.location] = [];
+            acc[cinema.location].push(cinema);
+            return acc;
+          },
+          {}
+        );
+        
+        setCinemas(groupedByLocation);
+      }
+    } catch (error) {
+      console.error(error.response?.data?.message, error);
     }
   };
 
   const handleEditCinema = cinema => {
     setEditCinema(cinema);
-    setView('edit'); 
+    setOpenForm(true);
+  };
+
+  const handleOpenForm = () => {
+    setOpenForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setOpenForm(false);
+    setEditCinema(null);
+  };
+
+  const handleSubmitForm = () => {
+    handleCloseForm();
+    fetchCinemas();
   };
 
   return (
@@ -27,29 +61,29 @@ const Cinema = () => {
         </Typography>
       </div>
 
-      {view === 'view' && (
-        <div className="flex justify-center space-x-4 mb-8">
-          <Button
-            color="blue"
-            size="lg"
-            className="hover:bg-blue-700"
-            onClick={() => handleSwitchView('create')}
-          >
-            + Create Cinema
-          </Button>
-        </div>
-      )}
+      <div className="flex justify-center space-x-4 mb-8">
+        <Button
+          color="blue"
+          size="lg"
+          className="hover:bg-blue-700"
+          onClick={handleOpenForm}
+        >
+          + Create Cinema
+        </Button>
+      </div>
 
-      {view === 'view' && <CinemaList onEdit={handleEditCinema} />}
-      {view === 'create' && (
-        <CinemaForm onCancel={() => handleSwitchView('view')} />
-      )}
-      {view === 'edit' && (
-        <CinemaForm
-          cinema={editCinema}
-          onCancel={() => handleSwitchView('view')}
-        />
-      )}
+      <CinemaList
+        onEdit={handleEditCinema}
+        cinemas={cinemas}
+        onSuccess={handleSubmitForm}
+      />
+
+      <CinemaForm
+        cinema={editCinema}
+        onCancel={handleCloseForm}
+        open={openForm}
+        onSuccess={handleSubmitForm}
+      />
     </div>
   );
 };

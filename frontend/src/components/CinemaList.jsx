@@ -1,86 +1,78 @@
-import {
-  Card,
-  Typography,
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-} from '@material-tailwind/react';
-import { useEffect, useState } from 'react';
-import { getAllCinemasApi, deleteCinemaApi } from '../api/cinemaApi';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Card, Typography, Button } from '@material-tailwind/react';
+
+import { deleteCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
+import DeleteModal from './DeleteModal';
 
-// eslint-disable-next-line react/prop-types
-const CinemaList = ({ onEdit }) => {
-  const [cinemas, setCinemas] = useState({});
-  const [open, setOpen] = useState(false); 
-  const [selectedCinemaId, setSelectedCinemaId] = useState(null); 
+const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedCinemaId, setSelectedCinemaId] = useState(null);
+  const [expandedLocation, setExpandedLocation] = useState(null);
 
-  useEffect(() => {
-    const fetchCinemas = async () => {
-      try {
-        const response = await getAllCinemasApi();
-        if (response.data.success) {
-          const groupedByLocation = response.data.cinemas.reduce(
-            (acc, cinema) => {
-              if (!acc[cinema.location]) acc[cinema.location] = [];
-              acc[cinema.location].push(cinema);
-              return acc;
-            },
-            {}
-          );
-          setCinemas(groupedByLocation);
-        }
-      } catch (error) {
-        console.error('Failed to fetch cinemas', error);
-      }
-    };
-    fetchCinemas();
-  }, []);
-
-  const openDeleteModal = id => {
-    setSelectedCinemaId(id); 
-    setOpen(true); 
+  const handleCloseDeleteModal = () => {
+    setOpenDeleteModal(false);
+    setSelectedCinemaId(null);
   };
 
-  const closeDeleteModal = () => {
-    setOpen(false); 
-    setSelectedCinemaId(null); 
+  const handleOpenDeleteModal = cinemaId => {
+    setSelectedCinemaId(cinemaId);
+    setOpenDeleteModal(true);
   };
 
   const handleDelete = async () => {
-    if (!selectedCinemaId) return; 
+    if (!selectedCinemaId) return;
 
     try {
       const response = await deleteCinemaApi(selectedCinemaId);
       if (response.data.success) {
-        showToast('Cinema deleted successfully', 'success');
-        setCinemas(prevCinemas =>
-          Object.fromEntries(
-            Object.entries(prevCinemas).map(([location, cinemas]) => [
-              location,
-              cinemas.filter(cinema => cinema._id !== selectedCinemaId),
-            ])
-          )
+        showToast(response.data.message, 'success');
+        const updatedCinemas = { ...cinemas };
+        const location = expandedLocation;
+
+        updatedCinemas[location] = updatedCinemas[location].filter(
+          cinema => cinema._id !== selectedCinemaId
         );
-        closeDeleteModal(); 
+
+        if (updatedCinemas[location].length === 0) {
+          delete updatedCinemas[location];
+          setExpandedLocation(null);
+        }
+        onSuccess();
+        handleCloseDeleteModal();
       }
-    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      showToast('Failed to delete cinema', 'error');
+      showToast(error.response?.data?.message, 'error');
     }
+  };
+
+  const toggleLocation = location => {
+    setExpandedLocation(expandedLocation === location ? null : location);
   };
 
   return (
     <div>
-      {Object.keys(cinemas).map(location => (
-        <div key={location} className="mb-6">
-          <Typography variant="h6" className="font-semibold text-blue-700 mb-2">
-            {location}
-          </Typography>
-          {cinemas[location].map(cinema => (
-            <Card key={cinema._id} shadow={true} className="p-4 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        {Object.keys(cinemas).map(location => (
+          <Card
+            key={location}
+            onClick={() => toggleLocation(location)}
+            className={`p-4 cursor-pointer ${
+              expandedLocation === location ? 'bg-gray-200' : 'bg-white'
+            }`}
+          >
+            <Typography variant="h6" className="font-semibold text-blue-700">
+              {location}
+            </Typography>
+          </Card>
+        ))}
+      </div>
+
+      {expandedLocation && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {cinemas[expandedLocation].map(cinema => (
+            <Card key={cinema._id} shadow={true} className="p-4">
               <Typography variant="h6" color="blue-gray" className="font-bold">
                 {cinema.name}
               </Typography>
@@ -94,7 +86,7 @@ const CinemaList = ({ onEdit }) => {
                 <Button
                   size="sm"
                   color="red"
-                  onClick={() => openDeleteModal(cinema._id)} 
+                  onClick={() => handleOpenDeleteModal(cinema._id)}
                 >
                   Delete
                 </Button>
@@ -102,30 +94,30 @@ const CinemaList = ({ onEdit }) => {
             </Card>
           ))}
         </div>
-      ))}
+      )}
 
-      <Dialog open={open} handler={closeDeleteModal}>
-        <DialogHeader>Confirm Delete</DialogHeader>
-        <DialogBody>
-          Are you sure you want to delete this cinema? This action cannot be
-          undone.
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            onClick={closeDeleteModal}
-            className="mr-1"
-          >
-            <span>Cancel</span>
-          </Button>
-          <Button variant="gradient" color="green" onClick={handleDelete}>
-            <span>Confirm</span>
-          </Button>
-        </DialogFooter>
-      </Dialog>
+      <DeleteModal
+        name="cinema"
+        open={openDeleteModal}
+        onClose={handleCloseDeleteModal}
+        onDelete={handleDelete}
+      />
     </div>
   );
+};
+
+CinemaList.propTypes = {
+  onEdit: PropTypes.func.isRequired,
+  cinemas: PropTypes.objectOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        address: PropTypes.string.isRequired,
+      })
+    ).isRequired
+  ).isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default CinemaList;

@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import { Toaster } from 'react-hot-toast';
 import AdminPage from './pages/AdminPage';
+import HallManagement from './components/HallManagement';
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -43,6 +44,8 @@ function App() {
             user?.role === 'admin' ? <AdminPage /> : <Navigate to={'/login'} />
           }
         />
+        <Route path="/admin/halls" element={<HallManagement />} />
+        
       </Routes>
       <Toaster />
     </div>

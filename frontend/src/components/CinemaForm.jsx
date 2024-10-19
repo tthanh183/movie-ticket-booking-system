@@ -1,5 +1,14 @@
-import { Button, Card, Typography } from '@material-tailwind/react';
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Typography,
+} from '@material-tailwind/react';
+
 import { createCinemaApi, updateCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
 
@@ -12,8 +21,7 @@ const locations = [
   'Quảng Ninh',
 ];
 
-// eslint-disable-next-line react/prop-types
-const CinemaForm = ({ cinema = null, onCancel }) => {
+const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     location: '',
@@ -24,14 +32,15 @@ const CinemaForm = ({ cinema = null, onCancel }) => {
 
   useEffect(() => {
     if (cinema) {
-      setFormData({
-        name: cinema.name,
-        location: cinema.location,
-        address: cinema.address,
-        totalHalls: cinema.totalHalls,
-      });
+      setFormData({ ...cinema });
+    } else {
+      resetForm();
     }
   }, [cinema]);
+
+  const resetForm = () => {
+    setFormData({ name: '', location: '', address: '', totalHalls: 0 });
+  };
 
   const handleChange = e => {
     setFormData({
@@ -44,18 +53,18 @@ const CinemaForm = ({ cinema = null, onCancel }) => {
     e.preventDefault();
     setLoading(true);
     try {
+      let response;
       if (cinema) {
-        const response = await updateCinemaApi(cinema._id, formData);
-        if (response.data.success) {
-          showToast('Cinema updated successfully', 'success');
-          onCancel();
-        }
+        response = await updateCinemaApi(cinema._id, formData);
+        showToast(response.data.message, 'success');
       } else {
-        const response = await createCinemaApi(formData);
-        if (response.data.success) {
-          showToast('Cinema created successfully', 'success');
-          onCancel();
-        }
+        response = await createCinemaApi(formData);
+        showToast(response.data.message, 'success');
+      }
+      if (response.data.success) {
+        onSuccess();
+        resetForm();
+        onCancel();
       }
     } catch (error) {
       showToast(error.response?.data?.message || 'Failed to submit', 'error');
@@ -65,102 +74,105 @@ const CinemaForm = ({ cinema = null, onCancel }) => {
   };
 
   return (
-    <Card shadow={true} className="p-6 max-w-lg mx-auto bg-white">
-      <Typography variant="h5" color="blue-gray" className="mb-4">
-        {cinema ? 'Edit Cinema' : 'Create New Cinema'}
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Cinema Name
-          </label>
-          <input
-            type="text"
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter cinema name"
-            name="name"
-            onChange={handleChange}
-            value={formData.name}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Location
-          </label>
-          <select
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-            value={formData.location}
-            name="location"
-          >
-            <option value="" disabled>
-              Select a location
-            </option>
-            {locations.map(loc => (
-              <option key={loc} value={loc}>
-                {loc}
+    <Dialog open={open} handler={onCancel}>
+      <DialogHeader>
+        <Typography variant="h5" color="blue-gray" className="text-center">
+          {cinema ? 'Edit Cinema' : 'Create New Cinema'}
+        </Typography>
+      </DialogHeader>
+      <DialogBody divider>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Cinema Name
+            </label>
+            <input
+              type="text"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter cinema name"
+              name="name"
+              onChange={handleChange}
+              value={formData.name}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Location
+            </label>
+            <select
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
+              value={formData.location}
+              name="location"
+              required
+            >
+              <option value="" disabled>
+                Select a location
               </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Address
-          </label>
-          <input
-            type="text"
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter cinema address"
-            name="address"
-            onChange={handleChange}
-            value={formData.address}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Total Halls
-          </label>
-          <input
-            type="number"
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter total halls"
-            name="totalHalls"
-            onChange={handleChange}
-            value={formData.totalHalls}
-          />
-        </div>
-
-        <div className="flex space-x-4">
-          <Button
-            color="blue"
-            size="lg"
-            fullWidth
-            className="hover:bg-blue-700"
-            type="submit"
-            disabled={loading}
-          >
-            {loading
-              ? cinema
-                ? 'Updating...'
-                : 'Creating...'
-              : cinema
-              ? 'Update Cinema'
-              : 'Create Cinema'}
-          </Button>
-          <Button
-            color="gray"
-            size="lg"
-            fullWidth
-            className="hover:bg-gray-500"
-            onClick={onCancel}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </Card>
+              {locations.map(loc => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Address
+            </label>
+            <input
+              type="text"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter cinema address"
+              name="address"
+              onChange={handleChange}
+              value={formData.address}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Total Halls
+            </label>
+            <input
+              type="number"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter total halls"
+              name="totalHalls"
+              onChange={handleChange}
+              value={formData.totalHalls}
+              required
+            />
+          </div>
+        </form>
+      </DialogBody>
+      <DialogFooter>
+        <Button
+          color="blue"
+          size="lg"
+          fullWidth
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading
+            ? cinema
+              ? 'Updating...'
+              : 'Creating...'
+            : cinema
+            ? 'Update Cinema'
+            : 'Create Cinema'}
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
+};
+
+CinemaForm.propTypes = {
+  cinema: PropTypes.object,
+  onCancel: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default CinemaForm;
