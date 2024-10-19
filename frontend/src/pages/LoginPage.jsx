@@ -1,6 +1,7 @@
-import { Card, Input, Button, Typography } from '@material-tailwind/react';
 import { useState } from 'react';
+
 import { useUserStore } from '../stores/useUserStore';
+import { Card, Input, Button, Typography } from '@material-tailwind/react';
 
 const LoginPage = () => {
   const [inputs, setInputs] = useState({
