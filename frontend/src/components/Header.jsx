@@ -1,7 +1,8 @@
-import { Navbar, Typography, Button, ListItem } from '@material-tailwind/react';
-import { useUserStore } from '../stores/useUserStore';
 import { Link } from 'react-router-dom';
+import { Navbar, Typography, Button, ListItem } from '@material-tailwind/react';
 import { CiLogin, CiLogout } from 'react-icons/ci';
+
+import { useUserStore } from '../stores/useUserStore';
 
 const Header = () => {
   const { user, logout } = useUserStore();

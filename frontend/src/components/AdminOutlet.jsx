@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types';
+
 import Cinema from './Cinema';
 
-// eslint-disable-next-line react/prop-types
 const AdminPanel = ({ selectedTab }) => {
   return (
     <div className="flex-1 p-6 bg-gray-100">
@@ -15,4 +16,7 @@ const AdminPanel = ({ selectedTab }) => {
   );
 };
 
+AdminPanel.propTypes = {
+  selectedTab: PropTypes.string.isRequired,
+};
 export default AdminPanel;

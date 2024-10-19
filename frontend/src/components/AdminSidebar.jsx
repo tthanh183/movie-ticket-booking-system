@@ -24,9 +24,9 @@ import {
   ChevronDownIcon,
   BuildingOffice2Icon,
 } from '@heroicons/react/24/outline';
+import PropTypes from 'prop-types';
 
-// eslint-disable-next-line react/prop-types
-const Sidebar = ({ setSelectedTab }) => {
+const AdminSideBar = ({ setSelectedTab }) => {
   const [open, setOpen] = useState(0);
 
   const handleOpen = value => {
@@ -173,4 +173,8 @@ const Sidebar = ({ setSelectedTab }) => {
   );
 };
 
-export default Sidebar;
+AdminSideBar.propTypes = {
+  setSelectedTab: PropTypes.func.isRequired,
+};
+
+export default AdminSideBar;
