@@ -2,9 +2,21 @@ import Cinema from '../models/cinema.model.js';
 import Hall from '../models/hall.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
+const countHalls = async cinemaId => {
+  return await Hall.countDocuments({ cinema: cinemaId });
+};
+
 export const getAllCinemas = async (req, res, next) => {
   try {
     const cinemas = await Cinema.find();
+    await Promise.all(
+      cinemas.map(async cinema => {
+        const totalHalls = await countHalls(cinema._id);
+        cinema.totalHalls = totalHalls;
+        return cinema.save();
+      })
+    );
+
     res.status(200).json({
       success: true,
       cinemas,
@@ -23,6 +35,10 @@ export const getCinemaById = async (req, res, next) => {
     if (!cinema) {
       return next(errorCreator('Cinema not found', 404));
     }
+
+    cinema.totalHalls = await countHalls(cinemaId);
+    await cinema.save();
+
     res.status(200).json({
       success: true,
       cinema,
@@ -83,7 +99,8 @@ export const deleteCinema = async (req, res, next) => {
       return next(errorCreator('Cinema not found', 404));
     }
 
-    const cinemaHall = await Cinema.findByIdAndDelete(cinemaId);
+    await Hall.deleteMany({ cinema: cinemaId });
+    await Cinema.findByIdAndDelete(cinemaId);
 
     res.status(200).json({
       success: true,

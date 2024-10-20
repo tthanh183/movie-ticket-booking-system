@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
-const cinemaHallSchema = new mongoose.Schema(
+const hallSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -27,6 +26,6 @@ const cinemaHallSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const CinemaHall = mongoose.model('CinemaHall', cinemaHallSchema);
+const Hall = mongoose.model('Hall', hallSchema);
 
-export default CinemaHall;
+export default Hall;
