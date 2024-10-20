@@ -1,5 +1,5 @@
 import Cinema from '../models/cinema.model.js';
-import CinemaHall from '../models/cinemaHall.model.js';
+import Hall from '../models/hall.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
 export const getAllCinemas = async (req, res, next) => {
@@ -95,25 +95,25 @@ export const deleteCinema = async (req, res, next) => {
   }
 };
 
-export const getCinemaHallsByCinemaId = async (req, res, next) => {
+export const getHallsByCinemaId = async (req, res, next) => {
   const { cinemaId } = req.params;
   try {
     const cinema = await Cinema.findById(cinemaId);
     if (!cinema) {
       return next(errorCreator('Cinema not found', 404));
     }
-    const cinemaHalls = await CinemaHall.find({ cinema: cinemaId });
+    const halls = await Hall.find({ cinema: cinemaId });
     res.status(200).json({
       success: true,
-      cinemaHalls: cinemaHalls,
+      halls: halls,
     });
   } catch (error) {
-    console.log('Error in getCinemaHallsByCinemaId', error);
+    console.log('Error in getHallsByCinemaId', error);
     next(error);
   }
 };
 
-export const createCinemaHall = async (req, res, next) => {
+export const createHall = async (req, res, next) => {
   const { cinemaId } = req.params;
   const { name, totalSeats, status } = req.body;
   try {
@@ -122,7 +122,7 @@ export const createCinemaHall = async (req, res, next) => {
       return next(errorCreator('Cinema not found', 404));
     }
 
-    const cinemaHall = await CinemaHall.create({
+    const hall = await Hall.create({
       name,
       totalSeats,
       status,
@@ -132,16 +132,16 @@ export const createCinemaHall = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: 'Hall created successfully',
-      cinemaHall: cinemaHall,
+      hall: hall,
     });
   } catch (error) {
-    console.log('Error in createCinemaHall', error);
+    console.log('Error in createHall', error);
     next(error);
   }
 };
 
-export const updateCinemaHall = async (req, res, next) => {
-  const { cinemaId, cinemaHallId } = req.params;
+export const updateHall = async (req, res, next) => {
+  const { cinemaId, hallId } = req.params;
   const { name, totalSeats, status } = req.body;
 
   try {
@@ -150,44 +150,44 @@ export const updateCinemaHall = async (req, res, next) => {
       return next(errorCreator('Cinema not found', 404));
     }
 
-    const cinemaHall = await CinemaHall.findById(cinemaHallId);
-    if (!cinemaHall) {
-      return next(errorCreator('Cinema Hall not found', 404));
+    const hall = await Hall.findById(hallId);
+    if (!hall) {
+      return next(errorCreator('Hall not found', 404));
     }
 
-    cinemaHall.name = name;
-    cinemaHall.totalSeats = totalSeats;
-    cinemaHall.status = status;
+    hall.name = name;
+    hall.totalSeats = totalSeats;
+    hall.status = status;
 
-    await cinemaHall.save();
+    await hall.save();
 
     res.status(200).json({
       success: true,
       message: 'Hall updated successfully',
-      cinemaHall: cinemaHall,
+      hall: hall,
     });
   } catch (error) {
-    console.log('Error in updateCinemaHall', error);
+    console.log('Error in updateHall', error);
     next(error);
   }
 };
 
-export const deleteCinemaHall = async (req, res, next) => {
-  const { cinemaId, cinemaHallId } = req.params;
+export const deleteHall = async (req, res, next) => {
+  const { cinemaId, hallId } = req.params;
   try {
     const cinema = await Cinema.findById(cinemaId);
     if (!cinema) {
       return next(errorCreator('Cinema not found', 404));
     }
 
-    const cinemaHall = await CinemaHall.findByIdAndDelete(cinemaHallId);
+    const hall = await Hall.findByIdAndDelete(hallId);
 
     res.status(200).json({
       success: true,
       message: 'Hall deleted successfully',
     });
   } catch (error) {
-    console.log('Error in deleteCinemaHall', error);
+    console.log('Error in deleteHall', error);
     next(error);
   }
 };
