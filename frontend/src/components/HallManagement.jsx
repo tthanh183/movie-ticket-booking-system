@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -7,8 +8,8 @@ import {
   Option,
   Dialog,
 } from '@material-tailwind/react';
-import { useEffect, useState } from 'react';
-import Pagination from './Pagination'; // Import the new Pagination component
+import PropTypes from 'prop-types';
+
 import {
   createHallApi,
   getHallsByCinemaIdApi,
@@ -16,6 +17,7 @@ import {
   getCinemaByIdApi,
 } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
+import Pagination from './Pagination';
 
 const HallManagement = ({ cinemaId, openHallManagement, onCancel }) => {
   const [halls, setHalls] = useState([]);
@@ -224,6 +226,12 @@ const HallManagement = ({ cinemaId, openHallManagement, onCancel }) => {
       </div>
     </Dialog>
   );
+};
+
+HallManagement.propTypes = {
+  cinemaId: PropTypes.string,
+  openHallManagement: PropTypes.bool.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default HallManagement;

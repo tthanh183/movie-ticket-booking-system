@@ -25,6 +25,7 @@ import {
   BuildingOffice2Icon,
 } from '@heroicons/react/24/outline';
 import PropTypes from 'prop-types';
+
 const AdminSideBar = ({ setSelectedTab }) => {
   const [open, setOpen] = useState(0);
 
