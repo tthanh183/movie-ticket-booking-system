@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
 const movieSchema = new mongoose.Schema(
   {
@@ -49,13 +48,13 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Trailer is required'],
     },
-    featured: {
+    isFeatured: {
       type: Boolean,
       default: false,
     },
     isShowing: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   { timestamps: true }

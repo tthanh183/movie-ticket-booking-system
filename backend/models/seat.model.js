@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import e from 'express';
 
 const seatSchema = new mongoose.Schema(
   {
