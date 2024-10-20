@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 
 import Cinema from './Cinema';
+import Movie from './Movie';
 
 const AdminPanel = ({ selectedTab }) => {
   return (
@@ -12,6 +13,7 @@ const AdminPanel = ({ selectedTab }) => {
         <h1 className="text-2xl font-bold">Analytics</h1>
       )}
       {selectedTab === 'Cinemas' && <Cinema />}
+      {selectedTab === 'Movies' && <Movie/>}
     </div>
   );
 };

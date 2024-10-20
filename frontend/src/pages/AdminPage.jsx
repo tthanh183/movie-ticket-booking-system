@@ -5,6 +5,7 @@ import AdminOutlet from '../components/AdminOutlet';
 
 const AdminPage = () => {
   const [selectedTab, setSelectedTab] = useState('Dashboard');
+  
   return (
     <div className="flex">
       <AdminSidebar setSelectedTab={setSelectedTab} />

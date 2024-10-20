@@ -18,6 +18,7 @@ import {
   InboxIcon,
   PowerIcon,
   BuildingOfficeIcon,
+  FilmIcon,
 } from '@heroicons/react/24/solid';
 import {
   ChevronRightIcon,
@@ -99,12 +100,19 @@ const AdminSideBar = ({ setSelectedTab }) => {
             />
           }
         >
-          <ListItem onClick={setSelectedTab('Cinemas')}>
+          <ListItem onClick={() => setSelectedTab('Cinemas')}>
             <ListItemPrefix>
               <BuildingOfficeIcon className="h-5 w-5" />
             </ListItemPrefix>
             Cinemas
           </ListItem>
+          <ListItem onClick={() => setSelectedTab('Movies')}>
+            <ListItemPrefix>
+              <FilmIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Movies
+          </ListItem>
+
           <ListItem className="p-0" selected={open === 2}>
             <AccordionHeader
               onClick={() => handleOpen(2)}
