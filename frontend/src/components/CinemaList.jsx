@@ -5,11 +5,13 @@ import { Card, Typography, Button } from '@material-tailwind/react';
 import { deleteCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
 import DeleteModal from './DeleteModal';
+import HallManagement from './HallManagement';
 
 const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedCinemaId, setSelectedCinemaId] = useState(null);
   const [expandedLocation, setExpandedLocation] = useState(null);
+  const [openHallManagement, setOpenHallManagement] = useState(false);
 
   const handleCloseDeleteModal = () => {
     setOpenDeleteModal(false);
@@ -51,6 +53,16 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
     setExpandedLocation(expandedLocation === location ? null : location);
   };
 
+  const handleOpenHallManagement = cinemaId => {
+    setSelectedCinemaId(cinemaId);
+    setOpenHallManagement(true);
+  };
+
+  const handleCloseHallManagement = () => {
+    setSelectedCinemaId(null);
+    setOpenHallManagement(false);
+  };
+
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
@@ -76,12 +88,22 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
               <Typography variant="h6" color="blue-gray" className="font-bold">
                 {cinema.name}
               </Typography>
-              <Typography color="blue-gray" className="mb-2">
+              <Typography color="blue-gray" className="mb-2 min-h-20">
                 {cinema.address}
               </Typography>
+              <Typography color="blue-gray" className="mb-2 min-h-2">
+                {cinema.totalHalls} Halls Available
+              </Typography>
               <div className="flex space-x-4">
-                <Button size="sm" color="blue" onClick={() => onEdit(cinema)}>
+                <Button size="sm" color="yellow" onClick={() => onEdit(cinema)}>
                   Edit
+                </Button>
+                <Button
+                  size="sm"
+                  color="blue"
+                  onClick={() => handleOpenHallManagement(cinema._id)}
+                >
+                  Manage Halls
                 </Button>
                 <Button
                   size="sm"
@@ -95,6 +117,12 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
           ))}
         </div>
       )}
+
+      <HallManagement
+        cinemaId={selectedCinemaId}
+        openHallManagement={openHallManagement}
+        onCancel={handleCloseHallManagement}
+      />
 
       <DeleteModal
         name="cinema"

@@ -45,7 +45,6 @@ function App() {
           }
         />
         <Route path="/admin/halls" element={<HallManagement />} />
-        
       </Routes>
       <Toaster />
     </div>
