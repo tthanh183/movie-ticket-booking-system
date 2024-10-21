@@ -5,7 +5,7 @@ import { Card, Typography, Button } from '@material-tailwind/react';
 import { deleteCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
 import DeleteModal from './DeleteModal';
-import HallManagement from './HallManagement';
+import HallManager from './HallManager';
 
 const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -118,7 +118,7 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
         </div>
       )}
 
-      <HallManagement
+      <HallManager
         cinemaId={selectedCinemaId}
         openHallManagement={openHallManagement}
         onCancel={handleCloseHallManagement}

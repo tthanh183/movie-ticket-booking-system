@@ -19,7 +19,7 @@ import {
 import showToast from '../lib/showToast';
 import Pagination from './Pagination';
 
-const HallManagement = ({ cinemaId, openHallManagement, onCancel }) => {
+const HallManager = ({ cinemaId, openHallManagement, onCancel }) => {
   const [halls, setHalls] = useState([]);
   const [cinema, setCinema] = useState(null);
   const [newHall, setNewHall] = useState({
@@ -228,10 +228,10 @@ const HallManagement = ({ cinemaId, openHallManagement, onCancel }) => {
   );
 };
 
-HallManagement.propTypes = {
+HallManager.propTypes = {
   cinemaId: PropTypes.string,
   openHallManagement: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 
-export default HallManagement;
+export default HallManager;

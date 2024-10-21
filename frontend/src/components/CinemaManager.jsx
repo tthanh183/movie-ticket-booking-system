@@ -5,9 +5,8 @@ import { getAllCinemasApi } from '../api/cinemaApi';
 import CinemaForm from './CinemaForm';
 import CinemaList from './CinemaList';
 import CustomSkeleton from './CustomSkeleton';
-import { set } from 'mongoose';
 
-const Cinema = () => {
+const CinemaManager = () => {
   const [cinemas, setCinemas] = useState({});
   const [editCinema, setEditCinema] = useState(null);
   const [openForm, setOpenForm] = useState(false);
@@ -101,4 +100,4 @@ const Cinema = () => {
   );
 };
 
-export default Cinema;
+export default CinemaManager;

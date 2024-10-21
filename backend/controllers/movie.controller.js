@@ -1,7 +1,7 @@
 import Movie from '../models/movie.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
-export const getShowingMovies = async (req, res) => {
+export const getShowingMovies = async (req, res, next) => {
   try {
     const movies = await Movie.find({ isShowing: true });
     res.status(200).json({ success: true, movies });
@@ -11,7 +11,7 @@ export const getShowingMovies = async (req, res) => {
   }
 };
 
-export const toggleShowingMovie = async (req, res) => {
+export const toggleShowingMovie = async (req, res, next) => {
   const { movieId } = req.params;
   try {
     const movie = await Movie.findById(movieId);
@@ -32,7 +32,7 @@ export const toggleShowingMovie = async (req, res) => {
   }
 };
 
-export const getFeaturedMovies = async (req, res) => {
+export const getFeaturedMovies = async (req, res, next) => {
   try {
     const movies = await Movie.find({ isFeatured: true });
     res.status(200).json({ success: true, movies });
@@ -42,7 +42,7 @@ export const getFeaturedMovies = async (req, res) => {
   }
 };
 
-export const toggleFeaturedMovie = async (req, res) => {
+export const toggleFeaturedMovie = async (req, res, next) => {
   const { movieId } = req.params;
   try {
     const movie = await Movie.findById(movieId);
@@ -62,7 +62,7 @@ export const toggleFeaturedMovie = async (req, res) => {
   }
 };
 
-export const getMovieById = async (req, res) => {
+export const getMovieById = async (req, res, next) => {
   const { movieId } = req.params;
   try {
     const movie = await Movie.findById(movieId);
@@ -76,8 +76,21 @@ export const getMovieById = async (req, res) => {
   }
 };
 
-export const createMovie = async (req, res) => {
-  const { title, description, duration, isShowing, isFeatured } = req.body;
+export const createMovie = async (req, res, next) => {
+  const {
+    title,
+    description,
+    releaseDate,
+    director,
+    cast,
+    rating,
+    genre,
+    duration,
+    poster,
+    trailer,
+    isShowing,
+    isFeatured,
+  } = req.body;
   try {
     const movie = await Movie.create({
       title,
@@ -104,7 +117,7 @@ export const createMovie = async (req, res) => {
   }
 };
 
-export const updateMovie = async (req, res) => {
+export const updateMovie = async (req, res, next) => {
   const { movieId } = req.params;
   const {
     title,
@@ -152,7 +165,7 @@ export const updateMovie = async (req, res) => {
   }
 };
 
-export const deleteMovie = async (req, res) => {
+export const deleteMovie = async (req, res, next) => {
   const { movieId } = req.params;
   try {
     const movie = await Movie.findById(movieId);

@@ -7,8 +7,10 @@ import {
   DialogBody,
   DialogFooter,
   Typography,
+  Input,
+  Select,
+  Option,
 } from '@material-tailwind/react';
-
 import { createCinemaApi, updateCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
 
@@ -43,10 +45,11 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
   };
 
   const handleChange = e => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async e => {
@@ -64,10 +67,13 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
       if (response.data.success) {
         onSuccess();
         resetForm();
-        onCancel();
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to submit', 'error');
+      onCancel();
+      showToast(
+        error.response?.data?.message || 'Failed to submit cinema form',
+        'error'
+      );
     } finally {
       setLoading(false);
     }
@@ -83,65 +89,48 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
       <DialogBody divider>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Cinema Name
-            </label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter cinema name"
+            <Input
+              label="Cinema Name"
               name="name"
-              onChange={handleChange}
               value={formData.name}
+              onChange={handleChange}
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Location
-            </label>
-            <select
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleChange}
-              value={formData.location}
+            <Select
+              label="Location"
               name="location"
+              value={formData.location}
+              onChange={handleChange}
               required
             >
-              <option value="" disabled>
+              <Option value="" disabled>
                 Select a location
-              </option>
+              </Option>
               {locations.map(loc => (
-                <option key={loc} value={loc}>
+                <Option key={loc} value={loc}>
                   {loc}
-                </option>
+                </Option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Address
-            </label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter cinema address"
+            <Input
+              label="Address"
               name="address"
-              onChange={handleChange}
               value={formData.address}
+              onChange={handleChange}
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Total Halls
-            </label>
-            <input
+            <Input
+              label="Total Halls"
               type="number"
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter total halls"
               name="totalHalls"
-              onChange={handleChange}
               value={formData.totalHalls}
+              onChange={handleChange}
               required
             />
           </div>
