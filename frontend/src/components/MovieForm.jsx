@@ -20,9 +20,8 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
     rating: '',
     genre: [],
     duration: '',
-    poster: null, // Changed to null to hold file reference
-    trailer: null, // Changed to null to hold file reference
-    isFeatured: false,
+    poster: null,
+    trailer: null,
     isShowing: false,
   });
   const [loading, setLoading] = useState(false);
@@ -49,9 +48,8 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
       rating: '',
       genre: [],
       duration: '',
-      poster: null, // Reset to null
-      trailer: null, // Reset to null
-      isFeatured: false,
+      poster: null,
+      trailer: null,
       isShowing: false,
     });
     setUploadProgress({ poster: 0, trailer: 0 });
@@ -61,7 +59,7 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
     const { name, value, type, files } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'file' ? files[0] : value, // Store file reference
+      [name]: type === 'file' ? files[0] : value,
     }));
   };
 
@@ -171,7 +169,7 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Input
             label="Rating"
-            type="number"
+            type="double"
             name="rating"
             value={formData.rating}
             onChange={handleChange}
@@ -200,7 +198,6 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
           />
         </div>
 
-        {/* Upload Poster */}
         <div>
           <Input
             type="file"
@@ -215,7 +212,6 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
           )}
         </div>
 
-        {/* Upload Trailer */}
         <div>
           <Input
             type="file"
