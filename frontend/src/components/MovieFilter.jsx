@@ -1,4 +1,5 @@
 import { Button } from '@material-tailwind/react';
+import PropTypes from 'prop-types';
 
 const MovieFilter = ({ selectedFilter, onFilterChange }) => {
   return (
@@ -15,9 +16,13 @@ const MovieFilter = ({ selectedFilter, onFilterChange }) => {
       >
         Now Showing
       </Button>
-      
     </div>
   );
+};
+
+MovieFilter.propTypes = {
+  selectedFilter: PropTypes.string.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
 };
 
 export default MovieFilter;

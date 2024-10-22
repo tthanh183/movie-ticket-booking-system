@@ -5,6 +5,7 @@ import { getAllCinemasApi } from '../api/cinemaApi';
 import CinemaForm from './CinemaForm';
 import CinemaList from './CinemaList';
 import CustomSkeleton from './CustomSkeleton';
+import { FaPlusCircle } from 'react-icons/fa';
 
 const CinemaManager = () => {
   const [cinemas, setCinemas] = useState({});
@@ -68,7 +69,8 @@ const CinemaManager = () => {
         <div className="p-6 bg-gray-100 min-h-screen">
           <div className="text-center mb-6">
             <Typography variant="h3" color="blue-gray" className="font-bold">
-              Manage Cinemas
+              <FaPlusCircle />
+              Add Movie
             </Typography>
           </div>
 

@@ -6,6 +6,8 @@ import {
   Textarea,
   ProgressBar,
 } from '@material-tailwind/react';
+import PropTypes from 'prop-types';
+
 import { createMovieApi, updateMovieApi } from '../api/movieApi';
 import { uploadToCloudinary } from '../lib/uploadToCloudinary';
 import showToast from '../lib/showToast';
@@ -241,6 +243,13 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
       </form>
     </Dialog>
   );
+};
+
+MovieForm.propTypes = {
+  movie: PropTypes.object,
+  open: PropTypes.bool.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default MovieForm;
