@@ -32,32 +32,13 @@ export const toggleShowingMovie = async (req, res, next) => {
   }
 };
 
-export const getFeaturedMovies = async (req, res, next) => {
+
+export const getAllMovies = async (req, res, next) => {
   try {
-    const movies = await Movie.find({ isFeatured: true });
+    const movies = await Movie.find();
     res.status(200).json({ success: true, movies });
   } catch (error) {
-    console.log('Error in getFeaturedMovies', error);
-    next(error);
-  }
-};
-
-export const toggleFeaturedMovie = async (req, res, next) => {
-  const { movieId } = req.params;
-  try {
-    const movie = await Movie.findById(movieId);
-    if (!movie) {
-      return next(errorCreator('Movie not found', 404));
-    }
-    movie.isFeatured = !movie.isFeatured;
-    await movie.save();
-    res.status(200).json({
-      success: true,
-      message: 'Movie featured status updated successfully',
-      movie,
-    });
-  } catch (error) {
-    console.log('Error in toggleFeaturedMovie', error);
+    console.log('Error in getAllMovies', error);
     next(error);
   }
 };
@@ -89,7 +70,6 @@ export const createMovie = async (req, res, next) => {
     poster,
     trailer,
     isShowing,
-    isFeatured,
   } = req.body;
   try {
     const movie = await Movie.create({
@@ -104,7 +84,6 @@ export const createMovie = async (req, res, next) => {
       poster,
       trailer,
       isShowing,
-      isFeatured,
     });
     res.status(201).json({
       success: true,
@@ -131,7 +110,6 @@ export const updateMovie = async (req, res, next) => {
     poster,
     trailer,
     isShowing,
-    isFeatured,
   } = req.body;
 
   try {
@@ -151,7 +129,6 @@ export const updateMovie = async (req, res, next) => {
     movie.poster = poster;
     movie.trailer = trailer;
     movie.isShowing = isShowing;
-    movie.isFeatured = isFeatured;
 
     await movie.save();
     res.status(200).json({

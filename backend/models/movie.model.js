@@ -48,10 +48,6 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Trailer is required'],
     },
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
     isShowing: {
       type: Boolean,
       default: false,
