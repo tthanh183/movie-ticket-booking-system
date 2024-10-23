@@ -8,18 +8,24 @@ const countHalls = async cinemaId => {
 
 export const getAllCinemas = async (req, res, next) => {
   try {
-    const cinemas = await Cinema.find();
-    await Promise.all(
+    const cinemas = await Cinema.find().populate({
+      path: 'location',
+      select: 'name',
+    });
+    const modifiedCinemas = await Promise.all(
       cinemas.map(async cinema => {
         const totalHalls = await countHalls(cinema._id);
-        cinema.totalHalls = totalHalls;
-        return cinema.save();
+        return {
+          ...cinema._doc,
+          location: cinema.location.name,
+          totalHalls,
+        };
       })
     );
 
     res.status(200).json({
       success: true,
-      cinemas,
+      modifiedCinemas,
     });
   } catch (error) {
     console.log('Error in getAllCinemas', error);

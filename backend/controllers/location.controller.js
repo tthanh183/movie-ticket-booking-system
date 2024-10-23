@@ -1,7 +1,7 @@
 import Location from '../models/location.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
-export const getLocations = async (req, res, next) => {
+export const getAllLocations = async (req, res, next) => {
   try {
     const locations = await Location.find();
 
