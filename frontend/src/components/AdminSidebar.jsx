@@ -19,6 +19,7 @@ import {
   PowerIcon,
   BuildingOfficeIcon,
   FilmIcon,
+  ClockIcon,
 } from '@heroicons/react/24/solid';
 import {
   ChevronRightIcon,
@@ -112,7 +113,12 @@ const AdminSideBar = ({ setSelectedTab }) => {
             </ListItemPrefix>
             Movies
           </ListItem>
-
+          <ListItem onClick={() => setSelectedTab('Showtimes')}>
+            <ListItemPrefix>
+              <ClockIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Showtimes
+          </ListItem>
           <ListItem className="p-0" selected={open === 2}>
             <AccordionHeader
               onClick={() => handleOpen(2)}

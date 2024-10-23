@@ -17,21 +17,24 @@ const CinemaManager = () => {
     fetchCinemas();
   }, []);
 
+  const transformCinemas = cinemas => {
+    return cinemas.reduce((acc, cinema) => {
+      const location = cinema.location; // Assuming location is a string
+      if (!acc[location]) {
+        acc[location] = [];
+      }
+      acc[location].push(cinema);
+      return acc;
+    }, {});
+  };
+
   const fetchCinemas = async () => {
     setLoading(true);
     try {
       const response = await getAllCinemasApi();
       if (response.data.success) {
-        const groupedByLocation = response.data.cinemas.reduce(
-          (acc, cinema) => {
-            if (!acc[cinema.location]) acc[cinema.location] = [];
-            acc[cinema.location].push(cinema);
-            return acc;
-          },
-          {}
-        );
-
-        setCinemas(groupedByLocation);
+        const groupedCinemas = transformCinemas(response.data.modifiedCinemas);
+        setCinemas(groupedCinemas);
       }
     } catch (error) {
       console.error(error.response?.data?.message, error);
@@ -69,7 +72,6 @@ const CinemaManager = () => {
         <div className="p-6 bg-gray-100 min-h-screen">
           <div className="text-center mb-6">
             <Typography variant="h3" color="blue-gray" className="font-bold">
-              <FaPlusCircle />
               Add Movie
             </Typography>
           </div>
@@ -81,7 +83,10 @@ const CinemaManager = () => {
               className="hover:bg-blue-700"
               onClick={handleOpenForm}
             >
-              + Create Cinema
+              <div className="flex justify-center items-center gap-2">
+                <FaPlusCircle />
+                Create Cinema
+              </div>
             </Button>
           </div>
 
@@ -90,6 +95,7 @@ const CinemaManager = () => {
             cinemas={cinemas}
             onSuccess={handleSubmitForm}
           />
+          
           <CinemaForm
             cinema={editCinema}
             onCancel={handleCloseForm}

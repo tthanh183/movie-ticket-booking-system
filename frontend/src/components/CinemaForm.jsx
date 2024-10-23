@@ -8,41 +8,54 @@ import {
   DialogFooter,
   Typography,
   Input,
-  Select,
-  Option,
 } from '@material-tailwind/react';
 import { createCinemaApi, updateCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
-
-const locations = [
-  'Hồ Chí Minh',
-  'Hà Nội',
-  'Đà Nẵng',
-  'Cần Thơ',
-  'Hải Phòng',
-  'Quảng Ninh',
-];
+import { getAllLocationsApi } from '../api/locationApi';
 
 const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
+  const [locations, setLocations] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    location: '',
     address: '',
     totalHalls: 0,
+    location: '', 
   });
   const [loading, setLoading] = useState(false);
 
+  const resetForm = () => {
+    setFormData({ name: '', address: '', totalHalls: 0, location: '' });
+  };
+
   useEffect(() => {
+
     if (cinema) {
-      setFormData({ ...cinema });
+      const locationId = locations.find(location => location.name === cinema.location)?._id;
+      setFormData({
+        name: cinema.name,
+        address: cinema.address,
+        totalHalls: cinema.totalHalls,
+        location: locationId,
+      });
     } else {
       resetForm();
     }
   }, [cinema]);
 
-  const resetForm = () => {
-    setFormData({ name: '', location: '', address: '', totalHalls: 0 });
-  };
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await getAllLocationsApi();
+        if (response.data.success) {
+          setLocations(response.data.locations);
+        }
+      } catch (error) {
+        showToast(error.response?.data?.message, 'error');
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -98,22 +111,29 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
             />
           </div>
           <div className="mb-4">
-            <Select
-              label="Location"
+            <label
+              htmlFor="location"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Location
+            </label>
+            <select
+              id="location"
               name="location"
               value={formData.location}
               onChange={handleChange}
+              className="block w-full p-2 border border-gray-300 rounded-md"
               required
             >
-              <Option value="" disabled>
+              <option value="" disabled>
                 Select a location
-              </Option>
-              {locations.map(loc => (
-                <Option key={loc} value={loc}>
-                  {loc}
-                </Option>
+              </option>
+              {locations.map(location => (
+                <option key={location._id} value={location._id}>
+                  {location.name}
+                </option>
               ))}
-            </Select>
+            </select>
           </div>
           <div className="mb-4">
             <Input
@@ -134,25 +154,25 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
               required
             />
           </div>
+          <DialogFooter>
+            <Button
+              color="blue"
+              size="lg"
+              fullWidth
+              type="submit"
+              disabled={loading}
+            >
+              {loading
+                ? cinema
+                  ? 'Updating...'
+                  : 'Creating...'
+                : cinema
+                ? 'Update Cinema'
+                : 'Create Cinema'}
+            </Button>
+          </DialogFooter>
         </form>
       </DialogBody>
-      <DialogFooter>
-        <Button
-          color="blue"
-          size="lg"
-          fullWidth
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading
-            ? cinema
-              ? 'Updating...'
-              : 'Creating...'
-            : cinema
-            ? 'Update Cinema'
-            : 'Create Cinema'}
-        </Button>
-      </DialogFooter>
     </Dialog>
   );
 };

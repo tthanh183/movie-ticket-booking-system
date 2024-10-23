@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 
 import CinemaManager from './CinemaManager';
 import MovieManager from './MovieManager';
+import ShowtimeManager from './ShowtimeManager';
 
 const AdminPanel = ({ selectedTab }) => {
   return (
@@ -14,6 +15,7 @@ const AdminPanel = ({ selectedTab }) => {
       )}
       {selectedTab === 'Cinemas' && <CinemaManager />}
       {selectedTab === 'Movies' && <MovieManager />}
+      {selectedTab === 'Showtimes' && <ShowtimeManager />}
     </div>
   );
 };

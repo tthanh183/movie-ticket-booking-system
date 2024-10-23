@@ -3,6 +3,8 @@ import axiosInstance from '../lib/axiosInstance';
 export const getAllCinemasApi = () => axiosInstance.get('/cinemas');
 export const getCinemaByIdApi = cinemaId =>
   axiosInstance.get(`/cinemas/${cinemaId}`);
+export const getAllCinemasByLocationApi = location =>
+  axiosInstance.get('/cinemas/location', { params: { location } });
 export const createCinemaApi = data => axiosInstance.post('/cinemas', data);
 export const updateCinemaApi = (cinemaId, data) =>
   axiosInstance.put(`/cinemas/${cinemaId}`, data);
