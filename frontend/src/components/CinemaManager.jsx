@@ -57,9 +57,9 @@ const CinemaManager = () => {
     setEditCinema(null);
   };
 
-  const handleSubmitForm = () => {
+  const handleSubmitForm = async () => {
     handleCloseForm();
-    fetchCinemas();
+    await fetchCinemas();
   };
 
   return (
@@ -95,7 +95,7 @@ const CinemaManager = () => {
             cinemas={cinemas}
             onSuccess={handleSubmitForm}
           />
-          
+
           <CinemaForm
             cinema={editCinema}
             onCancel={handleCloseForm}

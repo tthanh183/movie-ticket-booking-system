@@ -19,7 +19,7 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
     name: '',
     address: '',
     totalHalls: 0,
-    location: '', 
+    location: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -28,9 +28,10 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
   };
 
   useEffect(() => {
-
     if (cinema) {
-      const locationId = locations.find(location => location.name === cinema.location)?._id;
+      const locationId = locations.find(
+        location => location.name === cinema.location
+      )?._id;
       setFormData({
         name: cinema.name,
         address: cinema.address,
@@ -40,7 +41,7 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
     } else {
       resetForm();
     }
-  }, [cinema]);
+  }, [cinema, locations]);
 
   useEffect(() => {
     const fetchLocations = async () => {
