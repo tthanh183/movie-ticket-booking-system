@@ -16,12 +16,7 @@ const cinemaSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Address is required'],
       trim: true,
-    },
-    totalHalls: {
-      type: Number,
-      required: [true, 'Total halls is required'],
-      default: 0,
-    },
+    }
   },
   { timestamps: true }
 );

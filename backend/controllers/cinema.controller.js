@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Cinema from '../models/cinema.model.js';
 import Hall from '../models/hall.model.js';
 import errorCreator from '../utils/errorCreator.js';
@@ -25,7 +26,7 @@ export const getAllCinemas = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      modifiedCinemas,
+      cinemas: modifiedCinemas,
     });
   } catch (error) {
     console.log('Error in getAllCinemas', error);
@@ -34,20 +35,22 @@ export const getAllCinemas = async (req, res, next) => {
 };
 
 export const getAllCinemasByLocation = async (req, res, next) => {
-  const { locationId } = req.params;
+  const { locationId } = req.query;  
   try {
     const cinemas = await Cinema.find({ location: locationId });
-    await Promise.all(
+    const modifiedCinemas = await Promise.all(
       cinemas.map(async cinema => {
         const totalHalls = await countHalls(cinema._id);
-        cinema.totalHalls = totalHalls;
-        return cinema.save();
+        return {
+          ...cinema._doc,
+          totalHalls,
+        };
       })
     );
 
     res.status(200).json({
       success: true,
-      cinemas,
+      cinemas: modifiedCinemas,
     });
   } catch (error) {
     console.log('Error in getAllCinemasByLocation', error);
@@ -57,7 +60,8 @@ export const getAllCinemasByLocation = async (req, res, next) => {
 
 export const getCinemaById = async (req, res, next) => {
   const { cinemaId } = req.params;
-
+  console.log(cinemaId);
+  
   try {
     const cinema = await Cinema.findById(cinemaId);
     if (!cinema) {
@@ -65,11 +69,13 @@ export const getCinemaById = async (req, res, next) => {
     }
 
     cinema.totalHalls = await countHalls(cinemaId);
-    await cinema.save();
 
     res.status(200).json({
       success: true,
-      cinema,
+      cinema: {
+        ...cinema._doc,
+        totalHalls,
+      },
     });
   } catch (error) {
     console.log('Error in getCinemaById', error);
