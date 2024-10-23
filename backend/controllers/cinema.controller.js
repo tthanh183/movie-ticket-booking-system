@@ -28,9 +28,9 @@ export const getAllCinemas = async (req, res, next) => {
 };
 
 export const getAllCinemasByLocation = async (req, res, next) => {
-  const { location } = req.query;
+  const { locationId } = req.params;
   try {
-    const cinemas = await Cinema.find({ location });
+    const cinemas = await Cinema.find({ location: locationId });
     await Promise.all(
       cinemas.map(async cinema => {
         const totalHalls = await countHalls(cinema._id);

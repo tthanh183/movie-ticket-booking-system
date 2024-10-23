@@ -8,9 +8,9 @@ const cinemaSchema = new mongoose.Schema(
       trim: true,
     },
     location: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Location',
       required: [true, 'Location is required'],
-      trim: true,
     },
     address: {
       type: String,
