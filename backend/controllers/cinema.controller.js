@@ -27,6 +27,28 @@ export const getAllCinemas = async (req, res, next) => {
   }
 };
 
+export const getAllCinemasByLocation = async (req, res, next) => {
+  const { location } = req.query;
+  try {
+    const cinemas = await Cinema.find({ location });
+    await Promise.all(
+      cinemas.map(async cinema => {
+        const totalHalls = await countHalls(cinema._id);
+        cinema.totalHalls = totalHalls;
+        return cinema.save();
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      cinemas,
+    });
+  } catch (error) {
+    console.log('Error in getAllCinemasByLocation', error);
+    next(error);
+  }
+};
+
 export const getCinemaById = async (req, res, next) => {
   const { cinemaId } = req.params;
 

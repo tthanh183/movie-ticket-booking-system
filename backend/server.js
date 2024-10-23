@@ -9,6 +9,7 @@ import cinemaRoutes from './routes/cinema.route.js';
 import movieRoutes from './routes/movie.route.js';
 import showtimeRoutes from './routes/showtime.route.js';
 import bookingRoutes from './routes/booking.route.js';
+import locationRoutes from './routes/location.route.js';
 
 import { connectDB } from './lib/db.js';
 import errorHandler from './middlewares/errorHandler.middleware.js';
@@ -35,6 +36,7 @@ app.use('/api/cinemas', cinemaRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/showtimes', showtimeRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/locations', locationRoutes);
 
 app.use(errorHandler);
 

@@ -32,7 +32,6 @@ export const toggleShowingMovie = async (req, res, next) => {
   }
 };
 
-
 export const getAllMovies = async (req, res, next) => {
   try {
     const movies = await Movie.find();
