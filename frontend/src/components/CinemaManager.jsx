@@ -19,7 +19,7 @@ const CinemaManager = () => {
 
   const transformCinemas = cinemas => {
     return cinemas.reduce((acc, cinema) => {
-      const location = cinema.location; // Assuming location is a string
+      const location = cinema.location;
       if (!acc[location]) {
         acc[location] = [];
       }
@@ -33,7 +33,7 @@ const CinemaManager = () => {
     try {
       const response = await getAllCinemasApi();
       if (response.data.success) {
-        const groupedCinemas = transformCinemas(response.data.modifiedCinemas);
+        const groupedCinemas = transformCinemas(response.data.cinemas);
         setCinemas(groupedCinemas);
       }
     } catch (error) {
@@ -72,7 +72,7 @@ const CinemaManager = () => {
         <div className="p-6 bg-gray-100 min-h-screen">
           <div className="text-center mb-6">
             <Typography variant="h3" color="blue-gray" className="font-bold">
-              Add Movie
+              Cinema Manager
             </Typography>
           </div>
 

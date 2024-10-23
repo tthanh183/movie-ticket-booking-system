@@ -151,7 +151,7 @@ const CinemaForm = ({ cinema = null, onCancel, open, onSuccess }) => {
               name="totalHalls"
               value={formData.totalHalls}
               onChange={handleChange}
-              required
+              readOnly
             />
           </div>
           <DialogFooter>

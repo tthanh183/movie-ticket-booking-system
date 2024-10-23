@@ -19,7 +19,7 @@ import {
 import showToast from '../lib/showToast';
 import Pagination from './Pagination';
 
-const HallManager = ({ cinemaId, openHallManagement, onCancel }) => {
+const HallManager = ({ cinemaId, openHallManagement, onCancel, onSuccess }) => {
   const [halls, setHalls] = useState([]);
   const [cinema, setCinema] = useState(null);
   const [newHall, setNewHall] = useState({
@@ -84,9 +84,12 @@ const HallManager = ({ cinemaId, openHallManagement, onCancel }) => {
       }
       setLoading(false);
       showToast(response.data.message, 'success');
-      onCancel();
+      onSuccess();
     } catch (error) {
+      onCancel();
       showToast(error.response?.data?.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,10 +107,11 @@ const HallManager = ({ cinemaId, openHallManagement, onCancel }) => {
         );
         setHalls(updatedHalls);
         setEditingHall(null);
-        onCancel();
+        onSuccess();
         showToast(response.data.message, 'success');
       }
     } catch (error) {
+      onCancel();
       showToast(error.response?.data?.message, 'error');
     } finally {
       setLoading(false);
@@ -232,6 +236,7 @@ HallManager.propTypes = {
   cinemaId: PropTypes.string,
   openHallManagement: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default HallManager;

@@ -128,6 +128,7 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
         cinemaId={selectedCinemaId}
         openHallManagement={openHallManagement}
         onCancel={handleCloseHallManagement}
+        onSuccess={onSuccess}
       />
 
       <DeleteModal
