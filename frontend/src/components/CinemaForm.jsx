@@ -2,29 +2,18 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Typography, Input } from '@material-tailwind/react';
 import { createCinemaApi, updateCinemaApi } from '../api/cinemaApi';
-import { getAllLocationsApi } from '../api/locationApi';
 import showToast from '../lib/showToast';
+import { useLocationsStore } from '../stores/useLocationsStore';
 
 const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [locations, setLocations] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { locations, getLocations } = useLocationsStore();
 
   useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await getAllLocationsApi();
-        if (response.data.success) {
-          setLocations(response.data.locations);
-        }
-      } catch (error) {
-        showToast(error.response?.data?.message, 'error');
-      }
-    };
-
-    fetchLocations();
+    getLocations();
   }, []);
 
   useEffect(() => {

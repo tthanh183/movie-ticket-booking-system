@@ -125,7 +125,7 @@ const HallManager = ({ cinemaId, onCancel }) => {
         Manage Halls for {cinema?.name}
       </Typography>
 
-      <Card className="p-4 mb-4 shadow-lg border border-gray-300">
+      <Card className="p-4 mb-4 shadow-lg border border-gray-300 ">
         <Typography variant="h6" color="blue-gray" className="font-bold mb-2">
           {editingHall ? 'Edit Hall' : 'Add New Hall'}
         </Typography>
@@ -134,7 +134,7 @@ const HallManager = ({ cinemaId, onCancel }) => {
           name="name"
           value={currentHall.name}
           onChange={handleInputChange}
-          className="mb-2"
+          className="mb-4"
           required
         />
         <Input
@@ -143,14 +143,14 @@ const HallManager = ({ cinemaId, onCancel }) => {
           type="number"
           value={currentHall.totalSeats}
           onChange={handleInputChange}
-          className="mb-2"
+          className="mb-4"
           required
         />
         <Select
           label="Status"
           onChange={handleStatusChange}
           value={currentHall.status}
-          className="mb-2"
+          className="mb-4"
         >
           <Option value="active">Active</Option>
           <Option value="inactive">Inactive</Option>
