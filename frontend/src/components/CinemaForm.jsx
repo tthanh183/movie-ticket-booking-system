@@ -1,80 +1,52 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Typography, Input } from '@material-tailwind/react';
-import { createCinemaApi, updateCinemaApi } from '../api/cinemaApi';
-import showToast from '../lib/showToast';
 import { useLocationsStore } from '../stores/useLocationsStore';
+import { useCinemaStore } from '../stores/useCinemaStore';
 
-const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const CinemaForm = ({ onCancel }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    location: '',
+  });
   const { locations, getLocations } = useLocationsStore();
+  const { selectedCinema, updateCinema, createCinema, cinemaLoading } =
+    useCinemaStore();
 
   useEffect(() => {
     getLocations();
-  }, []);
+  }, [getLocations]);
 
   useEffect(() => {
-    if (cinema) {
-      setName(cinema.name);
-      setAddress(cinema.address);
+    if (selectedCinema) {
       const locationId = locations.find(
-        location => location.name === cinema.location
+        location => location.name === selectedCinema.location
       )?._id;
-      setSelectedLocation(locationId || '');
+      setFormData({
+        name: selectedCinema.name,
+        address: selectedCinema.address,
+        location: locationId || '',
+      });
     } else {
-      resetForm();
+      setFormData({
+        name: '',
+        address: '',
+        location: '',
+      });
     }
-  }, [cinema, locations]);
+  }, [selectedCinema, locations]);
 
-  const resetForm = () => {
-    setName('');
-    setAddress('');
-    setSelectedLocation('');
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const cinemaData = { name, address, location: selectedLocation };
-      if (cinema) {
-        const response = await updateCinemaApi(cinema._id, cinemaData);
-        if (response.data.success) {
-          setCinemas(prevCinemas => {
-            const updatedCinemas = { ...prevCinemas };
-            const location = cinema.location;
-            updatedCinemas[location] = updatedCinemas[location].map(c =>
-              c._id === cinema._id ? response.data.cinema : c
-            );
-            return updatedCinemas;
-          });
-          showToast(response.data.message, 'success');
-        }
-      } else {
-        const response = await createCinemaApi(cinemaData);
-        if (response.data.success) {
-          setCinemas(prevCinemas => {
-            const updatedCinemas = { ...prevCinemas };
-            const location = locations.find(
-              location => location._id === cinemaData.location
-            ).name;
-            if (!updatedCinemas[location]) {
-              updatedCinemas[location] = [];
-            }
-            updatedCinemas[location].push(response.data.cinema);
-            return updatedCinemas;
-          });
-          showToast(response.data.message, 'success');
-        }
-      }
-    } catch (error) {
-      showToast(error.response?.data?.message, 'error');
-    } finally {
-      setIsSubmitting(false);
-      if (!cinema) resetForm();
+    if (selectedCinema) {
+      updateCinema(selectedCinema._id, formData);
+    } else {
+      createCinema(formData);
     }
   };
 
@@ -84,14 +56,14 @@ const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
       className="bg-white p-6 rounded-lg shadow-md mb-6"
     >
       <Typography variant="h5" className="mb-4">
-        {cinema ? 'Edit Cinema' : 'Create Cinema'}
+        {selectedCinema ? 'Edit Cinema' : 'Create Cinema'}
       </Typography>
       <div className="grid grid-cols-1 gap-4">
         <select
           id="location"
           name="location"
-          value={selectedLocation}
-          onChange={e => setSelectedLocation(e.target.value)}
+          value={formData.location}
+          onChange={handleChange}
           className="block w-full p-2 border border-gray-300 rounded-md"
         >
           <option value="" disabled>
@@ -105,14 +77,14 @@ const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
         </select>
         <Input
           label="Cinema Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
+          value={formData.name}
+          onChange={handleChange}
           required
         />
         <Input
           label="Address"
-          value={address}
-          onChange={e => setAddress(e.target.value)}
+          value={formData.address}
+          onChange={handleChange}
           required
         />
         <div className="flex justify-end mt-4">
@@ -120,9 +92,9 @@ const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
             type="submit"
             color="green"
             className="mr-2"
-            disabled={isSubmitting}
+            disabled={cinemaLoading}
           >
-            {isSubmitting ? 'Saving...' : 'Save Cinema'}
+            {cinemaLoading ? 'Saving...' : 'Save Cinema'}
           </Button>
           <Button type="button" color="red" onClick={onCancel}>
             Cancel
@@ -134,8 +106,6 @@ const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
 };
 
 CinemaForm.propTypes = {
-  cinema: PropTypes.object,
-  setCinemas: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 

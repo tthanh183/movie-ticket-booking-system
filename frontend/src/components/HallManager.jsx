@@ -9,109 +9,59 @@ import {
 } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
 
-import {
-  createHallApi,
-  getHallsByCinemaIdApi,
-  updateHallApi,
-  getCinemaByIdApi,
-} from '../api/cinemaApi';
-import showToast from '../lib/showToast';
 import Pagination from './Pagination';
+import { useCinemaStore } from '../stores/useCinemaStore';
+import { useHallStore } from '../stores/useHallStore';
 
-const HallManager = ({ cinemaId, onCancel }) => {
-  const [halls, setHalls] = useState([]);
-  const [cinema, setCinema] = useState(null);
-  const [currentHall, setCurrentHall] = useState({
+const HallManager = ({onCancel}) => {
+  const [formData, setFormData] = useState({
     name: '',
     totalSeats: '',
     status: 'active',
   });
-  const [editingHall, setEditingHall] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { selectedCinema, cinemaLoading } = useCinemaStore();
+  
+  const {
+    halls,
+    hallLoading,
+    selectedHall,
+    getHallsByCinema,
+    createHall,
+    updateHall,
+    deleteHall,
+    setSelectedHall,
+    clearSelectedHall,
+  } = useHallStore();
+
   const [currentPage, setCurrentPage] = useState(1);
   const hallsPerPage = 4;
 
-  useEffect(() => {
-    if (cinemaId) {
-      fetchHalls(cinemaId);
-      fetchCinema(cinemaId);
+  useEffect(() => {    
+    if (selectedCinema) {
+      getHallsByCinema(selectedCinema._id);
     }
-  }, [cinemaId]);
-
-  const fetchHalls = async cinemaId => {
-    try {
-      const response = await getHallsByCinemaIdApi(cinemaId);
-      if (response.data.success) {
-        setHalls(response.data.halls);
-      }
-    } catch (error) {
-      console.error(error.response?.data?.message, error);
-    }
-  };
-
-  const fetchCinema = async id => {
-    try {
-      const response = await getCinemaByIdApi(id);
-      if (response.data.success) {
-        setCinema(response.data.cinema);
-      }
-    } catch (error) {
-      console.error(error.response?.data?.message, error);
-    }
-  };
+  }, [selectedCinema, getHallsByCinema]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-    setCurrentHall({ ...currentHall, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleStatusChange = e => {
-    setCurrentHall({ ...currentHall, status: e });
+    setFormData({ ...formData, status: e.target.value });
   };
 
   const handleAddOrUpdateHall = async () => {
-    setLoading(true);
-    try {
-      let response;
-      if (editingHall) {
-        response = await updateHallApi(cinemaId, editingHall._id, currentHall);
-        if (response.data.success) {
-          const updatedHalls = halls.map(hall =>
-            hall._id === editingHall._id ? response.data.hall : hall
-          );
-          setHalls(updatedHalls);
-          showToast(response.data.message, 'success');
-        }
-      } else {
-        response = await createHallApi(cinemaId, currentHall);
-        if (response.data.success) {
-          setHalls([...halls, response.data.hall]);
-          showToast(response.data.message, 'success');
-        }
-      }
-      setCurrentHall({ name: '', totalSeats: '', status: 'active' });
-      setEditingHall(null);
-    } catch (error) {
-      onCancel();
-      showToast(error.response?.data?.message, 'error');
-    } finally {
-      setLoading(false);
+    if (selectedHall) {
+      updateHall(selectedCinema._id, selectedHall._id, formData);
+    } else {
+      createHall(selectedCinema._id, formData);
     }
   };
 
-  const handleEdit = hall => {
-    setEditingHall(hall);
-    setCurrentHall({
-      name: hall.name,
-      totalSeats: hall.totalSeats,
-      status: hall.status,
-    });
-  };
-
-  const handleDeleteHall = hallId => {
-    const updatedHalls = halls.filter(hall => hall._id !== hallId);
-    setHalls(updatedHalls);
-    showToast('Hall deleted successfully', 'success');
+  const handleDeleteHall = () => {
+    deleteHall(selectedCinema._id, selectedHall._id);
+    clearSelectedHall();
   };
 
   const indexOfLastHall = currentPage * hallsPerPage;
@@ -122,17 +72,17 @@ const HallManager = ({ cinemaId, onCancel }) => {
   return (
     <div>
       <Typography variant="h5" color="blue-gray" className="font-bold mb-4">
-        Manage Halls for {cinema?.name}
+        Manage Halls for {selectedCinema?.name}
       </Typography>
 
       <Card className="p-4 mb-4 shadow-lg border border-gray-300 ">
         <Typography variant="h6" color="blue-gray" className="font-bold mb-2">
-          {editingHall ? 'Edit Hall' : 'Add New Hall'}
+          {selectedHall ? 'Edit Hall' : 'Add New Hall'}
         </Typography>
         <Input
           label="Hall Name"
           name="name"
-          value={currentHall.name}
+          value={selectedHall?.name}
           onChange={handleInputChange}
           className="mb-4"
           required
@@ -141,7 +91,7 @@ const HallManager = ({ cinemaId, onCancel }) => {
           label="Total Seats"
           name="totalSeats"
           type="number"
-          value={currentHall.totalSeats}
+          value={selectedHall?.totalSeats}
           onChange={handleInputChange}
           className="mb-4"
           required
@@ -149,7 +99,7 @@ const HallManager = ({ cinemaId, onCancel }) => {
         <Select
           label="Status"
           onChange={handleStatusChange}
-          value={currentHall.status}
+          value={selectedHall?.status}
           className="mb-4"
         >
           <Option value="active">Active</Option>
@@ -158,14 +108,12 @@ const HallManager = ({ cinemaId, onCancel }) => {
         <Button
           color="green"
           onClick={handleAddOrUpdateHall}
-          disabled={loading}
+          disabled={cinemaLoading || hallLoading}
         >
-          {loading
-            ? editingHall
-              ? 'Saving...'
-              : 'Adding...'
-            : editingHall
-            ? 'Save Changes'
+          {cinemaLoading || hallLoading
+            ? 'Loading...'
+            : selectedHall
+            ? 'Update Hall'
             : 'Add Hall'}
         </Button>
       </Card>
@@ -185,14 +133,14 @@ const HallManager = ({ cinemaId, onCancel }) => {
               <Typography>Status: {hall.status}</Typography>
             </div>
             <div className="flex space-x-2">
-              <Button onClick={() => handleEdit(hall)} color="yellow" size="sm">
-                Edit
-              </Button>
               <Button
-                onClick={() => handleDeleteHall(hall._id)}
-                color="red"
+                onClick={() => setSelectedHall(hall)}
+                color="yellow"
                 size="sm"
               >
+                Edit
+              </Button>
+              <Button onClick={handleDeleteHall} color="red" size="sm">
                 Delete
               </Button>
             </div>
@@ -213,7 +161,6 @@ const HallManager = ({ cinemaId, onCancel }) => {
 };
 
 HallManager.propTypes = {
-  cinemaId: PropTypes.string.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 

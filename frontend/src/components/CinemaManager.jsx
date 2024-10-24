@@ -1,65 +1,32 @@
 import { useEffect, useState } from 'react';
 import { Button, Typography } from '@material-tailwind/react';
-import { getAllCinemasApi } from '../api/cinemaApi';
 import CinemaForm from './CinemaForm';
 import CinemaList from './CinemaList';
 import CustomSkeleton from './CustomSkeleton';
 import { FaPlusCircle } from 'react-icons/fa';
+import { useCinemaStore } from '../stores/useCinemaStore';
 
 const CinemaManager = () => {
-  const [cinemas, setCinemas] = useState({});
-  const [editCinema, setEditCinema] = useState(null);
   const [openForm, setOpenForm] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { transformedCinemas, getCinemas, cinemaLoading, clearSelectedCinema } =
+    useCinemaStore();
 
   useEffect(() => {
-    fetchCinemas();
-  }, []);
-
-  const transformCinemas = cinemas => {
-    return cinemas.reduce((acc, cinema) => {
-      const location = cinema.location;
-      if (!acc[location]) {
-        acc[location] = [];
-      }
-      acc[location].push(cinema);
-      return acc;
-    }, {});
-  };
-
-  const fetchCinemas = async () => {
-    setLoading(true);
-    try {
-      const response = await getAllCinemasApi();
-      if (response.data.success) {
-        const groupedCinemas = transformCinemas(response.data.cinemas);
-        setCinemas(groupedCinemas);
-      }
-    } catch (error) {
-      console.error(error.response?.data?.message, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEditCinema = cinema => {
-    setEditCinema(cinema);
-    setOpenForm(true);
-  };
+    getCinemas();
+  }, [getCinemas]);
 
   const handleOpenForm = () => {
-    setEditCinema(null);
     setOpenForm(true);
   };
 
   const handleCloseForm = () => {
+    clearSelectedCinema();
     setOpenForm(false);
-    setEditCinema(null);
   };
 
   return (
     <>
-      {loading ? (
+      {cinemaLoading ? (
         <div className="flex justify-center items-center min-h-screen">
           <CustomSkeleton />
         </div>
@@ -82,19 +49,9 @@ const CinemaManager = () => {
             </Button>
           </div>
 
-          {openForm && (
-            <CinemaForm
-              cinema={editCinema}
-              onCancel={handleCloseForm}
-              setCinemas={setCinemas}
-            />
-          )}
+          {openForm && <CinemaForm onCancel={handleCloseForm} />}
 
-          <CinemaList
-            onEdit={handleEditCinema}
-            cinemas={cinemas}
-            setCinemas={setCinemas}
-          />
+          <CinemaList cinemas={transformedCinemas} onOpen={handleOpenForm} />
         </div>
       )}
     </>

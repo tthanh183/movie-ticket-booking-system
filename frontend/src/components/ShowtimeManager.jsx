@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Button, Dialog } from '@material-tailwind/react';
+import { Button } from '@material-tailwind/react';
 import ShowtimeCalendar from './ShowtimeCalendar';
-import {
-  getAllCinemasByLocationApi,
-  getHallsByCinemaIdApi,
-} from '../api/cinemaApi';
+import { getAllCinemasByLocationApi } from '../api/cinemaApi';
+import { getHallsByCinemaIdApi } from '../api/hallApi';
 import { getShowingMoviesApi } from '../api/movieApi';
 import { getAllLocationsApi } from '../api/locationApi';
 import AddShowtimeModal from './AddShowtimeModal';
 
 const ShowtimeManager = () => {
-  const [showtimes, setShowtimes] = useState([]); 
+  const [showtimes, setShowtimes] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedCinema, setSelectedCinema] = useState(null);
   const [selectedHall, setSelectedHall] = useState(null);
@@ -97,13 +95,12 @@ const ShowtimeManager = () => {
     }
   };
 
-
   const handleAddShowtime = newShowtime => {
     console.log('Adding showtime:', newShowtime);
-    
+
     const updatedShowtimes = [...showtimes, newShowtime];
     setShowtimes(updatedShowtimes);
-    setModalOpen(false); 
+    setModalOpen(false);
   };
 
   return (

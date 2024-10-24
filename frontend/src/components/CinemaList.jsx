@@ -1,69 +1,58 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Typography, Button } from '@material-tailwind/react';
-import { deleteCinemaApi } from '../api/cinemaApi';
-import showToast from '../lib/showToast';
+
+import { useCinemaStore } from '../stores/useCinemaStore';
+import { useLocationsStore } from '../stores/useLocationsStore';
 import DeleteModal from './DeleteModal';
 import HallManager from './HallManager';
-import { useLocationsStore } from '../stores/useLocationsStore';
 import CustomSkeleton from './CustomSkeleton';
 
-const CinemaList = ({ onEdit, cinemas, setCinemas }) => {
+const CinemaList = ({ cinemas, onOpen }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedCinemaId, setSelectedCinemaId] = useState(null);
   const [expandedLocation, setExpandedLocation] = useState(null);
   const [openHallManagement, setOpenHallManagement] = useState(false);
   const { locations, locationLoading, getLocations } = useLocationsStore();
+  const { deleteCinema, setSelectedCinema, clearSelectedCinema } =
+    useCinemaStore();
 
   useEffect(() => {
     getLocations();
-  }, []);
+  }, [getLocations]);
 
   const handleCloseDeleteModal = () => {
     setOpenDeleteModal(false);
-    setSelectedCinemaId(null);
-  };
-
-  const handleOpenDeleteModal = cinemaId => {
-    setSelectedCinemaId(cinemaId);
-    setOpenDeleteModal(true);
-  };
-
-  const handleDelete = async () => {
-    if (!selectedCinemaId) return;
-
-    try {
-      const response = await deleteCinemaApi(selectedCinemaId);
-      if (response.data.success) {
-        setCinemas(prevCinemas => {
-          const updatedCinemas = { ...prevCinemas };
-          Object.keys(updatedCinemas).forEach(location => {
-            updatedCinemas[location] = updatedCinemas[location].filter(
-              cinema => cinema._id !== selectedCinemaId
-            );
-          });
-          return updatedCinemas;
-        });
-        handleCloseDeleteModal();
-        showToast(response.data.message, 'success');
-      }
-    } catch (error) {
-      showToast(error.response?.data?.message, 'error');
-    }
+    clearSelectedCinema();
   };
 
   const toggleLocation = location => {
     setExpandedLocation(expandedLocation === location ? null : location);
   };
 
-  const handleOpenHallManagement = cinemaId => {
-    setSelectedCinemaId(cinemaId);
+  const handleOpenHallManagement = cinema => {
+    setSelectedCinema(cinema);
     setOpenHallManagement(true);
   };
 
   const handleCloseHallManagement = () => {
-    setSelectedCinemaId(null);
     setOpenHallManagement(false);
+    clearSelectedCinema();
+  };
+
+  const handleOpenForm = cinema => {
+    setSelectedCinema(cinema);
+    onOpen();
+  };
+
+  const handleOpenDeleteModal = cinema => {
+    setSelectedCinema(cinema);
+    setOpenDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    deleteCinema();
+    clearSelectedCinema();
+    setOpenDeleteModal(false);
   };
 
   return (
@@ -120,21 +109,21 @@ const CinemaList = ({ onEdit, cinemas, setCinemas }) => {
                     <Button
                       size="sm"
                       color="yellow"
-                      onClick={() => onEdit(cinema)}
+                      onClick={() => handleOpenForm(cinema)}
                     >
                       Edit
                     </Button>
                     <Button
                       size="sm"
                       color="blue"
-                      onClick={() => handleOpenHallManagement(cinema._id)}
+                      onClick={() => handleOpenHallManagement(cinema)}
                     >
                       Manage Halls
                     </Button>
                     <Button
                       size="sm"
                       color="red"
-                      onClick={() => handleOpenDeleteModal(cinema._id)}
+                      onClick={() => handleOpenDeleteModal(cinema)}
                     >
                       Delete
                     </Button>
@@ -146,19 +135,17 @@ const CinemaList = ({ onEdit, cinemas, setCinemas }) => {
 
           {openHallManagement && (
             <div className="mt-8">
-              <HallManager
-                cinemaId={selectedCinemaId}
-                onCancel={handleCloseHallManagement}
-              />
+              <HallManager onCancel={handleCloseHallManagement} />
             </div>
           )}
 
-          <DeleteModal
-            name="cinema"
-            open={openDeleteModal}
-            onClose={handleCloseDeleteModal}
-            onDelete={handleDelete}
-          />
+          {openDeleteModal && (
+            <DeleteModal
+              open={openDeleteModal}
+              onCancel={handleCloseDeleteModal}
+              onDelete={handleDelete}
+            />
+          )}
         </div>
       )}
     </div>
@@ -166,18 +153,8 @@ const CinemaList = ({ onEdit, cinemas, setCinemas }) => {
 };
 
 CinemaList.propTypes = {
-  onEdit: PropTypes.func.isRequired,
-  cinemas: PropTypes.objectOf(
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        address: PropTypes.string.isRequired,
-        totalHalls: PropTypes.number.isRequired,
-      })
-    ).isRequired
-  ).isRequired,
-  setCinemas: PropTypes.func.isRequired,
+  cinemas: PropTypes.object.isRequired,
+  onOpen: PropTypes.func.isRequired,
 };
 
 export default CinemaList;

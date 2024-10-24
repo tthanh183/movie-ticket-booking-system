@@ -12,7 +12,7 @@ export const useLocationsStore = create(set => ({
     try {
       const response = await getAllLocationsApi();
       if (response.data.success) {
-        set({ locations: response.data.locations, locationLoading: false });
+        set({ locations: response.data.locations });
       } else {
         showToast('Failed to fetch locations. Please try again.', 'error');
       }
@@ -21,6 +21,7 @@ export const useLocationsStore = create(set => ({
         error.response.data.message ||
           'Something went wrong. Please try again later.'
       );
+    } finally {
       set({ locationLoading: false });
     }
   },

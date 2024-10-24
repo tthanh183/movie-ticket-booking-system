@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Dialog, Button } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
-import { getCinemaByIdApi, getHallByIdApi } from '../api/cinemaApi';
+import { getCinemaByIdApi } from '../api/cinemaApi';
 import { createShowtimeApi } from '../api/showtimeApi';
 import showToast from '../lib/showToast';
+import { getHallsByCinemaIdApi } from '../api/hallApi';
 
 const AddShowtimeModal = ({
   cinema,
@@ -35,7 +36,7 @@ const AddShowtimeModal = ({
         setCinemaName(cinemaResponse.data.cinema.name);
       }
 
-      const hallResponse = await getHallByIdApi(cinema, hall);
+      const hallResponse = await getHallsByCinemaIdApi(cinema, hall);
       if (hallResponse.data.success) {
         setHallName(hallResponse.data.hall.name);
       }
