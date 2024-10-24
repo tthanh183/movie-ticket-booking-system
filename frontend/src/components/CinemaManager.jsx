@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Button, Typography } from '@material-tailwind/react';
-
 import { getAllCinemasApi } from '../api/cinemaApi';
 import CinemaForm from './CinemaForm';
 import CinemaList from './CinemaList';
@@ -49,6 +48,7 @@ const CinemaManager = () => {
   };
 
   const handleOpenForm = () => {
+    setEditCinema(null);
     setOpenForm(true);
   };
 
@@ -58,8 +58,8 @@ const CinemaManager = () => {
   };
 
   const handleSubmitForm = async () => {
-    handleCloseForm();
     await fetchCinemas();
+    handleCloseForm();
   };
 
   return (
@@ -69,38 +69,36 @@ const CinemaManager = () => {
           <CustomSkeleton />
         </div>
       ) : (
-        <div className="p-6 bg-gray-100 min-h-screen">
-          <div className="text-center mb-6">
+        <div className="p-6 min-h-screen">
+          <div className="text-center mb-4">
             <Typography variant="h3" color="blue-gray" className="font-bold">
               Cinema Manager
             </Typography>
           </div>
 
-          <div className="flex justify-center space-x-4 mb-8">
+          <div className="flex justify-center mb-4">
             <Button
               color="blue"
               size="lg"
-              className="hover:bg-blue-700"
+              className="hover:bg-blue-700 flex items-center gap-2"
               onClick={handleOpenForm}
             >
-              <div className="flex justify-center items-center gap-2">
-                <FaPlusCircle />
-                Create Cinema
-              </div>
+              <FaPlusCircle /> Create Cinema
             </Button>
           </div>
+
+          {openForm && (
+            <CinemaForm
+              cinema={editCinema}
+              onCancel={handleCloseForm}
+              onSuccess={handleSubmitForm}
+            />
+          )}
 
           <CinemaList
             onEdit={handleEditCinema}
             cinemas={cinemas}
-            onSuccess={handleSubmitForm}
-          />
-
-          <CinemaForm
-            cinema={editCinema}
-            onCancel={handleCloseForm}
-            open={openForm}
-            onSuccess={handleSubmitForm}
+            onSuccess={fetchCinemas}
           />
         </div>
       )}

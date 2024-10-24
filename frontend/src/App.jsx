@@ -44,7 +44,7 @@ function App() {
           }
         />
       </Routes>
-      <Toaster />
+      <Toaster className="z-50"/>
     </div>
   );
 }

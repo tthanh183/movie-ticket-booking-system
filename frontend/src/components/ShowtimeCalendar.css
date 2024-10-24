@@ -1,0 +1,54 @@
+.showtime-calendar-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.calendar-section {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.showtime-details-section {
+  flex: 2;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.time-slot {
+  margin-bottom: 20px;
+}
+
+.draggable-slot {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.morning-slot h4, .afternoon-slot h4, .evening-slot h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.add-showtime-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.add-showtime-button:hover {
+  background-color: #45a049;
+}
+
+.no-showtimes-message {
+  color: #888;
+}

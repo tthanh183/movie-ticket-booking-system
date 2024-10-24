@@ -84,7 +84,7 @@ const HallManager = ({ cinemaId, openHallManagement, onCancel, onSuccess }) => {
       }
       setLoading(false);
       showToast(response.data.message, 'success');
-      onSuccess();
+      // onSuccess();
     } catch (error) {
       onCancel();
       showToast(error.response?.data?.message, 'error');
@@ -107,7 +107,7 @@ const HallManager = ({ cinemaId, openHallManagement, onCancel, onSuccess }) => {
         );
         setHalls(updatedHalls);
         setEditingHall(null);
-        onSuccess();
+        // onSuccess();
         showToast(response.data.message, 'success');
       }
     } catch (error) {

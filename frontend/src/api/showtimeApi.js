@@ -1,13 +1,13 @@
 import axiosInstance from '../lib/axiosInstance';
 
-export const getAllShowtimesApi = async () =>
-  axiosInstance.get('/api/showtimes');
+export const getAllShowtimesApi = () =>
+  axiosInstance.get('/showtimes');
 
-export const createShowtimeApi = async showtimeData =>
-  axiosInstance.post('/api/showtimes', showtimeData);
+export const createShowtimeApi = showtimeData =>
+  axiosInstance.post('/showtimes', showtimeData);
 
-export const updateShowtimeApi = async (showtimeId, showtimeData) =>
-  axiosInstance.put(`/api/showtimes/${showtimeId}`, showtimeData);
+export const updateShowtimeApi = (showtimeId, showtimeData) =>
+  axiosInstance.put(`/showtimes/${showtimeId}`, showtimeData);
 
-export const deleteShowtimeApi = async showtimeId =>
-  axiosInstance.delete(`/api/showtimes/${showtimeId}`);
+export const deleteShowtimeApi = showtimeId =>
+  axiosInstance.delete(`/showtimes/${showtimeId}`);

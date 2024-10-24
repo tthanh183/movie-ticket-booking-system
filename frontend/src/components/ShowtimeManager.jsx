@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Select,
-  Option,
-  Dialog,
-} from '@material-tailwind/react';
+import { Button, Dialog } from '@material-tailwind/react';
 import ShowtimeCalendar from './ShowtimeCalendar';
 import {
   getAllCinemasByLocationApi,
@@ -15,17 +7,16 @@ import {
 } from '../api/cinemaApi';
 import { getShowingMoviesApi } from '../api/movieApi';
 import { getAllLocationsApi } from '../api/locationApi';
+import AddShowtimeModal from './AddShowtimeModal';
 
 const ShowtimeManager = () => {
-  const [showtimes, setShowtimes] = useState([]);
+  const [showtimes, setShowtimes] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedCinema, setSelectedCinema] = useState(null);
   const [selectedHall, setSelectedHall] = useState(null);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const [selectedTime, setSelectedTime] = useState('');
-  const [selectedShowtimeIndex, setSelectedShowtimeIndex] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
 
   const [locations, setLocations] = useState([]);
   const [cinemas, setCinemas] = useState([]);
@@ -34,18 +25,21 @@ const ShowtimeManager = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchLocations();
-      if (selectedLocation) {
-        await fetchCinemas(selectedLocation);
-      }
-      if (selectedCinema) {
-        await fetchHallsByCinemaId(selectedCinema);
-      }
-      await fetchMovies();
-    };
-    fetchData();
-  }, [selectedLocation, selectedCinema]);
+    fetchLocations();
+    fetchMovies(); // Fetch all movies
+  }, []);
+
+  useEffect(() => {
+    if (selectedLocation) {
+      fetchCinemas(selectedLocation);
+    }
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    if (selectedCinema) {
+      fetchHallsByCinemaId(selectedCinema);
+    }
+  }, [selectedCinema]);
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -61,10 +55,10 @@ const ShowtimeManager = () => {
     }
   };
 
-  const fetchCinemas = async location => {
+  const fetchCinemas = async locationId => {
     setLoading(true);
     try {
-      const response = await getAllCinemasByLocationApi(location);
+      const response = await getAllCinemasByLocationApi(locationId);
       if (response.data.success) {
         setCinemas(response.data.cinemas);
       }
@@ -103,66 +97,13 @@ const ShowtimeManager = () => {
     }
   };
 
-  const handleLocationChange = value => {
-    if (value) {
-      setSelectedLocation(value);
-      console.log(value);
 
-      setSelectedCinema(null); // Reset cinema
-      setSelectedHall(null); // Reset hall
-      setSelectedMovie(null); // Reset movie
-    }
-  };
-
-  const handleCinemaChange = e => {
-    const cinemaId = e.target.value;
-    setSelectedCinema(cinemaId);
-    setSelectedHall(null); // Reset hall
-    setSelectedMovie(null); // Reset movie
-  };
-
-  const handleCellClick = time => {
-    const existingShowtime = showtimes.find(
-      showtime =>
-        showtime.screen === selectedHall &&
-        showtime.time === time &&
-        showtime.date === selectedDate
-    );
-    if (existingShowtime) {
-      setSelectedTime(existingShowtime.time);
-      setSelectedShowtimeIndex(showtimes.indexOf(existingShowtime));
-    } else {
-      setSelectedTime(time);
-      setSelectedShowtimeIndex(null);
-    }
-    setModalOpen(true);
-  };
-
-  const handleAddUpdateShowtime = () => {
-    const newShowtime = {
-      screen: selectedHall,
-      time: selectedTime,
-      date: selectedDate,
-    };
-    if (selectedShowtimeIndex !== null) {
-      const updatedShowtimes = showtimes.map((showtime, index) =>
-        index === selectedShowtimeIndex ? newShowtime : showtime
-      );
-      setShowtimes(updatedShowtimes);
-    } else {
-      setShowtimes([...showtimes, newShowtime]);
-    }
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setSelectedLocation('');
-    setSelectedCinema(null);
-    setSelectedHall(null);
-    setSelectedTime('');
-    setSelectedShowtimeIndex(null);
-    setSelectedDate('');
-    setModalOpen(false);
+  const handleAddShowtime = newShowtime => {
+    console.log('Adding showtime:', newShowtime);
+    
+    const updatedShowtimes = [...showtimes, newShowtime];
+    setShowtimes(updatedShowtimes);
+    setModalOpen(false); 
   };
 
   return (
@@ -170,97 +111,88 @@ const ShowtimeManager = () => {
       <h1 className="text-4xl font-bold mb-8 text-center text-blue-600">
         Showtime Manager
       </h1>
-      <Card className="shadow-lg mb-6">
-        <CardHeader className="text-xl font-bold bg-blue-500 text-white">
-          Showtime Schedule
-        </CardHeader>
-        <CardBody>
-          <div className="mb-4">
-            <Select
-              label="Select location"
+      <div className="shadow-lg mb-6 bg-white p-4">
+        <div className="mb-4 space-y-4">
+          <div>
+            <label htmlFor="location">Location:</label>
+            <select
+              id="location"
               name="location"
               value={selectedLocation}
-              onChange={val => handleLocationChange(val)} 
+              onChange={e => setSelectedLocation(e.target.value)}
+              className="block w-full p-2 border border-gray-300 rounded-md"
             >
-              <Option value="" disabled>
-                Select a location
-              </Option>
+              <option value="">Select a location</option>
               {locations.map(location => (
-                <Option key={location._id} value={location.id}>
-                  {location.name} 
-                </Option>
+                <option key={location._id} value={location._id}>
+                  {location.name}
+                </option>
               ))}
-            </Select>
-
-            <Select
-              label="Select cinema"
-              name="cinema"
-              value={selectedCinema || ''}
-              onChange={handleCinemaChange}
-            >
-              <Option value="" disabled>
-                Select a cinema
-              </Option>
-              {cinemas.map(cinema => (
-                <Option key={cinema._id} value={cinema._id}>
-                  {cinema.name}
-                </Option>
-              ))}
-            </Select>
-            <Select
-              label="Select hall"
-              name="hall"
-              value={selectedHall || ''}
-              onChange={e => setSelectedHall(e.target.value)}
-            >
-              <Option value="">Select a hall</Option>
-              {halls.map(hall => (
-                <Option key={hall._id} value={hall._id}>
-                  {hall.name}
-                </Option>
-              ))}
-            </Select>
-
-            <Select
-              label="Select movie"
-              name="movie"
-              value={selectedMovie || ''}
-              onChange={e => setSelectedMovie(e.target.value)}
-            >
-              <Option value="">Select a movie</Option>
-              {movies.map(movie => (
-                <Option key={movie._id} value={movie.title}>
-                  {movie.title}
-                </Option>
-              ))}
-            </Select>
-
-            <Button
-              color="blue"
-              onClick={() => handleCellClick('10:00 AM')}
-              disabled={!selectedHall || !selectedMovie}
-            >
-              Set Showtime
-            </Button>
+            </select>
           </div>
 
-          <ShowtimeCalendar
-            showtimes={showtimes}
-            onCellClick={handleCellClick}
-          />
-        </CardBody>
-      </Card>
+          <div>
+            <label htmlFor="cinema">Cinema:</label>
+            <select
+              id="cinema"
+              name="cinema"
+              value={selectedCinema}
+              onChange={e => setSelectedCinema(e.target.value)}
+              className="block w-full p-2 border border-gray-300 rounded-md"
+              disabled={!selectedLocation}
+            >
+              <option value="">Select a cinema</option>
+              {cinemas.map(cinema => (
+                <option key={cinema._id} value={cinema._id}>
+                  {cinema.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {/* Modal for Adding/Editing Showtime */}
-      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="p-4">
-          <h3 className="text-lg font-bold">Set Showtime</h3>
-          <p>{`Selected Time: ${selectedTime}`}</p>
-          <Button color="green" onClick={handleAddUpdateShowtime}>
-            {selectedShowtimeIndex !== null ? 'Update' : 'Add'}
+          <div>
+            <label htmlFor="hall">Hall:</label>
+            <select
+              id="hall"
+              name="hall"
+              value={selectedHall}
+              onChange={e => setSelectedHall(e.target.value)}
+              className="block w-full p-2 border border-gray-300 rounded-md"
+              disabled={!selectedCinema}
+            >
+              <option value="">Select a hall</option>
+              {halls.map(hall => (
+                <option key={hall._id} value={hall._id}>
+                  {hall.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Button
+            color="blue"
+            onClick={() => setModalOpen(true)}
+            disabled={!selectedHall}
+            className="mt-4"
+          >
+            Add Showtime
           </Button>
         </div>
-      </Dialog>
+
+        <ShowtimeCalendar
+          showtimesData={showtimes} // Pass the showtimes to the calendar
+        />
+      </div>
+
+      <AddShowtimeModal
+        cinema={selectedCinema}
+        hall={selectedHall}
+        movies={movies}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        showtimes={showtimes}
+        addShowtime={handleAddShowtime}
+      />
     </div>
   );
 };

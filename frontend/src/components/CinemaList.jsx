@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Typography, Button } from '@material-tailwind/react';
-
-import { deleteCinemaApi } from '../api/cinemaApi'; // API để xóa rạp
+import { deleteCinemaApi } from '../api/cinemaApi';
 import showToast from '../lib/showToast';
 import DeleteModal from './DeleteModal';
 import HallManager from './HallManager';
@@ -76,7 +75,7 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
           <Card
             key={location.id}
             onClick={() => toggleLocation(location.name)}
-            className={`p-4 cursor-pointer ${
+            className={`p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 ${
               expandedLocation === location.name ? 'bg-gray-200' : 'bg-white'
             }`}
           >
@@ -90,7 +89,11 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
       {expandedLocation && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {cinemas[expandedLocation]?.map(cinema => (
-            <Card key={cinema._id} shadow={true} className="p-4">
+            <Card
+              key={cinema._id}
+              shadow={true}
+              className="p-4 hover:shadow-lg transition-shadow duration-200"
+            >
               <Typography variant="h6" color="blue-gray" className="font-bold">
                 {cinema.name}
               </Typography>
