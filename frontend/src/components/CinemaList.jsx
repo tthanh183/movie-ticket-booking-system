@@ -7,7 +7,7 @@ import DeleteModal from './DeleteModal';
 import HallManager from './HallManager';
 import { getAllLocationsApi } from '../api/locationApi';
 
-const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
+const CinemaList = ({ onEdit, cinemas, setCinemas }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedCinemaId, setSelectedCinemaId] = useState(null);
   const [expandedLocation, setExpandedLocation] = useState(null);
@@ -45,9 +45,17 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
     try {
       const response = await deleteCinemaApi(selectedCinemaId);
       if (response.data.success) {
-        showToast(response.data.message, 'success');
-        onSuccess();
+        setCinemas(prevCinemas => {
+          const updatedCinemas = { ...prevCinemas };
+          Object.keys(updatedCinemas).forEach(location => {
+            updatedCinemas[location] = updatedCinemas[location].filter(
+              cinema => cinema._id !== selectedCinemaId
+            );
+          });
+          return updatedCinemas;
+        });
         handleCloseDeleteModal();
+        showToast(response.data.message, 'success');
       }
     } catch (error) {
       showToast(error.response?.data?.message, 'error');
@@ -127,12 +135,14 @@ const CinemaList = ({ onEdit, cinemas, onSuccess }) => {
         </div>
       )}
 
-      <HallManager
-        cinemaId={selectedCinemaId}
-        openHallManagement={openHallManagement}
-        onCancel={handleCloseHallManagement}
-        onSuccess={onSuccess}
-      />
+      {openHallManagement && (
+        <div className="mt-8">
+          <HallManager
+            cinemaId={selectedCinemaId}
+            onCancel={handleCloseHallManagement}
+          />
+        </div>
+      )}
 
       <DeleteModal
         name="cinema"
@@ -156,7 +166,7 @@ CinemaList.propTypes = {
       })
     ).isRequired
   ).isRequired,
-  onSuccess: PropTypes.func.isRequired,
+  setCinemas: PropTypes.func.isRequired,
 };
 
 export default CinemaList;

@@ -5,7 +5,7 @@ import { createCinemaApi, updateCinemaApi } from '../api/cinemaApi';
 import { getAllLocationsApi } from '../api/locationApi';
 import showToast from '../lib/showToast';
 
-const CinemaForm = ({ cinema, onSuccess, onCancel }) => {
+const CinemaForm = ({ cinema, setCinemas, onCancel }) => {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -51,13 +51,35 @@ const CinemaForm = ({ cinema, onSuccess, onCancel }) => {
     setIsSubmitting(true);
     try {
       const cinemaData = { name, address, location: selectedLocation };
-      const response = cinema
-        ? await updateCinemaApi(cinema._id, cinemaData)
-        : await createCinemaApi(cinemaData);
-
-      if (response.data.success) {
-        showToast(response.data.message, 'success');
-        onSuccess();
+      if (cinema) {
+        const response = await updateCinemaApi(cinema._id, cinemaData);
+        if (response.data.success) {
+          setCinemas(prevCinemas => {
+            const updatedCinemas = { ...prevCinemas };
+            const location = cinema.location;
+            updatedCinemas[location] = updatedCinemas[location].map(c =>
+              c._id === cinema._id ? response.data.cinema : c
+            );
+            return updatedCinemas;
+          });
+          showToast(response.data.message, 'success');
+        }
+      } else {
+        const response = await createCinemaApi(cinemaData);
+        if (response.data.success) {
+          setCinemas(prevCinemas => {
+            const updatedCinemas = { ...prevCinemas };
+            const location = locations.find(
+              location => location._id === cinemaData.location
+            ).name;
+            if (!updatedCinemas[location]) {
+              updatedCinemas[location] = [];
+            }
+            updatedCinemas[location].push(response.data.cinema);
+            return updatedCinemas;
+          });
+          showToast(response.data.message, 'success');
+        }
       }
     } catch (error) {
       showToast(error.response?.data?.message, 'error');
@@ -124,7 +146,7 @@ const CinemaForm = ({ cinema, onSuccess, onCancel }) => {
 
 CinemaForm.propTypes = {
   cinema: PropTypes.object,
-  onSuccess: PropTypes.func.isRequired,
+  setCinemas: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 

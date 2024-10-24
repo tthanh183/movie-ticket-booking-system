@@ -57,11 +57,6 @@ const CinemaManager = () => {
     setEditCinema(null);
   };
 
-  const handleSubmitForm = async () => {
-    await fetchCinemas();
-    handleCloseForm();
-  };
-
   return (
     <>
       {loading ? (
@@ -91,14 +86,14 @@ const CinemaManager = () => {
             <CinemaForm
               cinema={editCinema}
               onCancel={handleCloseForm}
-              onSuccess={handleSubmitForm}
+              setCinemas={setCinemas}
             />
           )}
 
           <CinemaList
             onEdit={handleEditCinema}
             cinemas={cinemas}
-            onSuccess={fetchCinemas}
+            setCinemas={setCinemas}
           />
         </div>
       )}

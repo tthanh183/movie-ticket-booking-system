@@ -6,7 +6,6 @@ import {
   Typography,
   Select,
   Option,
-  Dialog,
 } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
 
@@ -19,10 +18,10 @@ import {
 import showToast from '../lib/showToast';
 import Pagination from './Pagination';
 
-const HallManager = ({ cinemaId, openHallManagement, onCancel, onSuccess }) => {
+const HallManager = ({ cinemaId, onCancel }) => {
   const [halls, setHalls] = useState([]);
   const [cinema, setCinema] = useState(null);
-  const [newHall, setNewHall] = useState({
+  const [currentHall, setCurrentHall] = useState({
     name: '',
     totalSeats: '',
     status: 'active',
@@ -63,53 +62,35 @@ const HallManager = ({ cinemaId, openHallManagement, onCancel, onSuccess }) => {
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-    editingHall
-      ? setEditingHall({ ...editingHall, [name]: value })
-      : setNewHall({ ...newHall, [name]: value });
+    setCurrentHall({ ...currentHall, [name]: value });
   };
 
   const handleStatusChange = e => {
-    editingHall
-      ? setEditingHall({ ...editingHall, status: e })
-      : setNewHall({ ...newHall, status: e });
+    setCurrentHall({ ...currentHall, status: e });
   };
 
-  const handleAddHall = async () => {
+  const handleAddOrUpdateHall = async () => {
     setLoading(true);
     try {
-      const response = await createHallApi(cinemaId, newHall);
-      if (response.data.success) {
-        setNewHall({ name: '', totalSeats: '', status: 'active' });
-        setHalls([...halls, response.data.hall]);
+      let response;
+      if (editingHall) {
+        response = await updateHallApi(cinemaId, editingHall._id, currentHall);
+        if (response.data.success) {
+          const updatedHalls = halls.map(hall =>
+            hall._id === editingHall._id ? response.data.hall : hall
+          );
+          setHalls(updatedHalls);
+          showToast(response.data.message, 'success');
+        }
+      } else {
+        response = await createHallApi(cinemaId, currentHall);
+        if (response.data.success) {
+          setHalls([...halls, response.data.hall]);
+          showToast(response.data.message, 'success');
+        }
       }
-      setLoading(false);
-      showToast(response.data.message, 'success');
-      // onSuccess();
-    } catch (error) {
-      onCancel();
-      showToast(error.response?.data?.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSaveEdit = async () => {
-    setLoading(true);
-    try {
-      const response = await updateHallApi(
-        cinemaId,
-        editingHall._id,
-        editingHall
-      );
-      if (response.data.success) {
-        const updatedHalls = halls.map(hall =>
-          hall._id === editingHall._id ? response.data.hall : hall
-        );
-        setHalls(updatedHalls);
-        setEditingHall(null);
-        // onSuccess();
-        showToast(response.data.message, 'success');
-      }
+      setCurrentHall({ name: '', totalSeats: '', status: 'active' });
+      setEditingHall(null);
     } catch (error) {
       onCancel();
       showToast(error.response?.data?.message, 'error');
@@ -120,123 +101,120 @@ const HallManager = ({ cinemaId, openHallManagement, onCancel, onSuccess }) => {
 
   const handleEdit = hall => {
     setEditingHall(hall);
-    setNewHall({ name: '', totalSeats: '', status: 'active' });
+    setCurrentHall({
+      name: hall.name,
+      totalSeats: hall.totalSeats,
+      status: hall.status,
+    });
   };
 
-  const handleCancelEdit = () => {
-    setEditingHall(null);
-    setNewHall({ name: '', totalSeats: '', status: 'active' });
+  const handleDeleteHall = hallId => {
+    const updatedHalls = halls.filter(hall => hall._id !== hallId);
+    setHalls(updatedHalls);
+    showToast('Hall deleted successfully', 'success');
   };
 
   const indexOfLastHall = currentPage * hallsPerPage;
   const indexOfFirstHall = indexOfLastHall - hallsPerPage;
   const currentHalls = halls.slice(indexOfFirstHall, indexOfLastHall);
-
   const totalPages = Math.ceil(halls.length / hallsPerPage);
 
   return (
-    <Dialog
-      open={openHallManagement}
-      handler={onCancel}
-      className="w-full max-w-6xl mx-auto px-6 py-4"
-    >
-      <Typography variant="h4" className="mb-5 text-center text-gray-800">
-        {cinema?.name} Hall Management
+    <div>
+      <Typography variant="h5" color="blue-gray" className="font-bold mb-4">
+        Manage Halls for {cinema?.name}
       </Typography>
 
-      <Card className="p-6 mb-6 shadow-md bg-white">
-        <Typography variant="h5" className="mb-5 text-gray-700">
+      <Card className="p-4 mb-4 shadow-lg border border-gray-300">
+        <Typography variant="h6" color="blue-gray" className="font-bold mb-2">
           {editingHall ? 'Edit Hall' : 'Add New Hall'}
         </Typography>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            label="Hall Name"
-            name="name"
-            value={editingHall ? editingHall.name : newHall.name}
-            onChange={handleInputChange}
-            className="mb-4"
-            required
-          />
-          <Input
-            label="Total Seats"
-            name="totalSeats"
-            type="number"
-            value={editingHall ? editingHall.totalSeats : newHall.totalSeats}
-            onChange={handleInputChange}
-            className="mb-4"
-            required
-          />
-          <Select
-            label="Status"
-            value={editingHall ? editingHall.status : newHall.status}
-            onChange={handleStatusChange}
-          >
-            <Option value="active">Active</Option>
-            <Option value="inactive">Inactive</Option>
-            <Option value="maintenance">Maintenance</Option>
-          </Select>
-        </div>
-
-        <div className="flex justify-end mt-6">
-          {editingHall ? (
-            <>
-              <Button
-                color="yellow"
-                onClick={handleSaveEdit}
-                disabled={loading}
-              >
-                {loading ? 'Saving...' : 'Save Changes'}
-              </Button>
-              <Button color="red" onClick={handleCancelEdit} className="ml-3">
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <Button color="blue" onClick={handleAddHall} disabled={loading}>
-              {loading ? 'Adding...' : 'Add Hall'}
-            </Button>
-          )}
-        </div>
+        <Input
+          label="Hall Name"
+          name="name"
+          value={currentHall.name}
+          onChange={handleInputChange}
+          className="mb-2"
+          required
+        />
+        <Input
+          label="Total Seats"
+          name="totalSeats"
+          type="number"
+          value={currentHall.totalSeats}
+          onChange={handleInputChange}
+          className="mb-2"
+          required
+        />
+        <Select
+          label="Status"
+          onChange={handleStatusChange}
+          value={currentHall.status}
+          className="mb-2"
+        >
+          <Option value="active">Active</Option>
+          <Option value="inactive">Inactive</Option>
+        </Select>
+        <Button
+          color="green"
+          onClick={handleAddOrUpdateHall}
+          disabled={loading}
+        >
+          {loading
+            ? editingHall
+              ? 'Saving...'
+              : 'Adding...'
+            : editingHall
+            ? 'Save Changes'
+            : 'Add Hall'}
+        </Button>
       </Card>
 
-      <Typography variant="h5" className="mb-5 text-gray-700">
-        Existing Halls
-      </Typography>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card className="p-4 shadow-lg border border-gray-300">
+        <Typography variant="h6" color="blue-gray" className="font-bold mb-2">
+          Halls List
+        </Typography>
         {currentHalls.map(hall => (
-          <Card key={hall._id} className="p-6 shadow-md bg-white">
-            <Typography variant="h6" className="text-lg mb-4 text-gray-800">
-              {hall.name}
-            </Typography>
-            <Typography className="mb-2">
-              Total Seats: {hall.totalSeats}
-            </Typography>
-            <Typography>Status: {hall.status}</Typography>
-            <div className="flex space-x-4 mt-4">
-              <Button color="yellow" onClick={() => handleEdit(hall)}>
+          <div
+            key={hall._id}
+            className="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
+          >
+            <div>
+              <Typography className="font-bold">{hall.name}</Typography>
+              <Typography>{hall.totalSeats} Seats</Typography>
+              <Typography>Status: {hall.status}</Typography>
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={() => handleEdit(hall)} color="yellow" size="sm">
                 Edit
               </Button>
+              <Button
+                onClick={() => handleDeleteHall(hall._id)}
+                color="red"
+                size="sm"
+              >
+                Delete
+              </Button>
             </div>
-          </Card>
+          </div>
         ))}
-      </div>
-
-      <div className="mt-8">
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
-      </div>
-    </Dialog>
+      </Card>
+
+      <Button color="red" onClick={onCancel} className="mt-4">
+        Cancel
+      </Button>
+    </div>
   );
 };
 
 HallManager.propTypes = {
-  cinemaId: PropTypes.string,
-  openHallManagement: PropTypes.bool.isRequired,
+  cinemaId: PropTypes.string.isRequired,
   onCancel: PropTypes.func.isRequired,
-  onSuccess: PropTypes.func.isRequired,
 };
 
 export default HallManager;
