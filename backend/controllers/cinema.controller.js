@@ -82,9 +82,9 @@ export const getCinemaById = async (req, res, next) => {
 };
 
 export const createCinema = async (req, res, next) => {
-  const { name, location, address, totalHalls } = req.body;
+  const { name, location, address } = req.body;
   try {
-    const cinema = await Cinema.create({ name, location, address, totalHalls });
+    const cinema = await Cinema.create({ name, location, address, totalHalls:0 });
     res.status(201).json({
       success: true,
       message: 'Cinema created successfully',
