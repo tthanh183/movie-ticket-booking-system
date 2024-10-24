@@ -8,7 +8,7 @@ const showtimeSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    cinemaHall: {
+    hall: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'CinemaHall',
       required: true,

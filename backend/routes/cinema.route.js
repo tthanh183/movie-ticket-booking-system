@@ -9,6 +9,7 @@ import {
   getAllCinemasByLocation,
   updateCinema,
   getHallsByCinemaId,
+  getHallById,
   createHall,
   updateHall,
   deleteHall,
@@ -23,6 +24,7 @@ router.post('/', protectRoute, adminRoute, createCinema);
 router.put('/:cinemaId', protectRoute, adminRoute, updateCinema);
 router.delete('/:cinemaId', protectRoute, adminRoute, deleteCinema);
 router.get('/:cinemaId/halls', protectRoute, adminRoute, getHallsByCinemaId);
+router.get('/:cinemaId/halls/:hallId', protectRoute, adminRoute, getHallById);
 router.post('/:cinemaId/halls', protectRoute, adminRoute, createHall);
 router.put('/:cinemaId/halls/:hallId', protectRoute, adminRoute, updateHall);
 router.delete('/:cinemaId/halls/:hallId', protectRoute, adminRoute, deleteHall);

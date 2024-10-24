@@ -35,7 +35,7 @@ export const getAllCinemas = async (req, res, next) => {
 };
 
 export const getAllCinemasByLocation = async (req, res, next) => {
-  const { locationId } = req.query;  
+  const { locationId } = req.query;
   try {
     const cinemas = await Cinema.find({ location: locationId });
     const modifiedCinemas = await Promise.all(
@@ -61,14 +61,14 @@ export const getAllCinemasByLocation = async (req, res, next) => {
 export const getCinemaById = async (req, res, next) => {
   const { cinemaId } = req.params;
   console.log(cinemaId);
-  
+
   try {
     const cinema = await Cinema.findById(cinemaId);
     if (!cinema) {
       return next(errorCreator('Cinema not found', 404));
     }
 
-    cinema.totalHalls = await countHalls(cinemaId);
+    const totalHalls = await countHalls(cinemaId);
 
     res.status(200).json({
       success: true,
@@ -160,6 +160,27 @@ export const getHallsByCinemaId = async (req, res, next) => {
     });
   } catch (error) {
     console.log('Error in getHallsByCinemaId', error);
+    next(error);
+  }
+};
+
+export const getHallById = async (req, res, next) => {
+  const { cinemaId, hallId } = req.params;
+  try {
+    const cinema = await Cinema.findById(cinemaId);
+    if (!cinema) {
+      return next(errorCreator('Cinema not found', 404));
+    }
+    const hall = await Hall.findById(hallId);
+    if (!hall) {
+      return next(errorCreator('Hall not found', 404));
+    }
+    res.status(200).json({
+      success: true,
+      hall: hall,
+    });
+  } catch (error) {
+    console.log('Error in getHallById', error);
     next(error);
   }
 };
