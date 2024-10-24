@@ -17,6 +17,21 @@ const hallSchema = new mongoose.Schema(
       required: [true, 'Total seats is required'],
       default: 100,
     },
+    seatLayout: [
+      {
+        row: Number,
+        seats: [
+          {
+            col: Number,
+            status: {
+              type: String,
+              enum: ['available', 'booked', 'blocked'],
+              default: 'available',
+            },
+          },
+        ],
+      },
+    ],
     status: {
       type: String,
       enum: ['active', 'inactive', 'maintenance'],

@@ -1,6 +1,7 @@
 import Showtime from '../models/showtime.model.js';
 import Hall from '../models/hall.model.js';
 import errorCreator from '../utils/errorCreator.js';
+import Movie from '../models/movie.model.js';
 
 export const getShowtimesByHallId = async (req, res) => {
   const { hall } = req.params;
@@ -28,7 +29,15 @@ export const getShowtimesByMovieId = async (req, res) => {
 };
 export const createShowTimes = async (req, res) => {
   const { hall, movie, startTime, price } = req.body;
+
   try {
+    const movieExists = await Movie.findById(movie);
+    if (!movieExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Movie not found',
+      });
+    }
     const hallExists = await Hall.findById(hall);
     if (!hallExists) {
       return res.status(404).json({
@@ -37,6 +46,7 @@ export const createShowTimes = async (req, res) => {
       });
     }
     const availableSeats = hallExists.totalSeats;
+
     const showtime = await Showtime.create({
       hall,
       movie,
@@ -51,6 +61,7 @@ export const createShowTimes = async (req, res) => {
       showtime,
     });
   } catch (error) {
-    errorCreator(error, res);
+    console.log('Error in createShowTimes', error);
+    next(error);
   }
 };

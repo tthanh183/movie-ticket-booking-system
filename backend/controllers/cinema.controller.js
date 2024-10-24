@@ -60,8 +60,6 @@ export const getAllCinemasByLocation = async (req, res, next) => {
 
 export const getCinemaById = async (req, res, next) => {
   const { cinemaId } = req.params;
-  console.log(cinemaId);
-
   try {
     const cinema = await Cinema.findById(cinemaId);
     if (!cinema) {
@@ -188,10 +186,32 @@ export const getHallById = async (req, res, next) => {
 export const createHall = async (req, res, next) => {
   const { cinemaId } = req.params;
   const { name, totalSeats, status } = req.body;
+
   try {
     const cinema = await Cinema.findById(cinemaId);
     if (!cinema) {
       return next(errorCreator('Cinema not found', 404));
+    }
+
+    const seatsPerRow = 10; 
+    const numberOfRows = Math.ceil(totalSeats / seatsPerRow);
+
+    const seatLayout = [];
+
+    for (let row = 0; row < numberOfRows; row++) {
+      const seatsInRow = [];
+      for (let col = 0; col < seatsPerRow; col++) {
+        const seatNumber = row * seatsPerRow + col + 1;
+        if (seatNumber > totalSeats) break;
+        seatsInRow.push({
+          col,
+          status: 'available',
+        });
+      }
+      seatLayout.push({
+        row,
+        seats: seatsInRow,
+      });
     }
 
     const hall = await Hall.create({
@@ -199,6 +219,7 @@ export const createHall = async (req, res, next) => {
       totalSeats,
       status,
       cinema: cinemaId,
+      seatLayout,
     });
 
     res.status(201).json({
@@ -211,6 +232,7 @@ export const createHall = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const updateHall = async (req, res, next) => {
   const { cinemaId, hallId } = req.params;

@@ -21,10 +21,15 @@ const showtimeSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'Price is required'],
     },
-    availableSeats: [
+    seatsStatus: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seat',
+        row: Number,
+        col: Number,
+        status: {
+          type: String,
+          enum: ['available', 'booked', 'blocked'],
+          default: 'available',
+        },
       },
     ],
   },
