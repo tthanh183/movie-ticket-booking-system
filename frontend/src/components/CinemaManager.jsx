@@ -24,6 +24,11 @@ const CinemaManager = () => {
     setOpenForm(false);
   };
 
+  const handleSubmitForm = () => {
+    setOpenForm(false);
+    getCinemas();
+  };
+
   return (
     <>
       {cinemaLoading ? (
@@ -49,7 +54,12 @@ const CinemaManager = () => {
             </Button>
           </div>
 
-          {openForm && <CinemaForm onCancel={handleCloseForm} />}
+          {openForm && (
+            <CinemaForm
+              onCancel={handleCloseForm}
+              onSuccess={handleSubmitForm}
+            />
+          )}
 
           <CinemaList cinemas={transformedCinemas} onOpen={handleOpenForm} />
         </div>

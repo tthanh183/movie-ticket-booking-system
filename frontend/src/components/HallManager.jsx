@@ -13,14 +13,14 @@ import Pagination from './Pagination';
 import { useCinemaStore } from '../stores/useCinemaStore';
 import { useHallStore } from '../stores/useHallStore';
 
-const HallManager = ({onCancel}) => {
+const HallManager = ({ onCancel, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     totalSeats: '',
     status: 'active',
   });
   const { selectedCinema, cinemaLoading } = useCinemaStore();
-  
+
   const {
     halls,
     hallLoading,
@@ -36,11 +36,11 @@ const HallManager = ({onCancel}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const hallsPerPage = 4;
 
-  useEffect(() => {    
+  useEffect(() => {
     if (selectedCinema) {
       getHallsByCinema(selectedCinema._id);
     }
-  }, [selectedCinema, getHallsByCinema]);
+  }, [selectedCinema, getHallsByCinema, selectedHall]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -53,10 +53,16 @@ const HallManager = ({onCancel}) => {
 
   const handleAddOrUpdateHall = async () => {
     if (selectedHall) {
-      updateHall(selectedCinema._id, selectedHall._id, formData);
+      await updateHall(selectedCinema._id, selectedHall._id, formData);
     } else {
-      createHall(selectedCinema._id, formData);
+      await createHall(selectedCinema._id, formData);
     }
+    setFormData({
+      name: '',
+      totalSeats: '',
+      status: 'active',
+    });
+    onSuccess();
   };
 
   const handleDeleteHall = () => {
@@ -162,6 +168,7 @@ const HallManager = ({onCancel}) => {
 
 HallManager.propTypes = {
   onCancel: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default HallManager;

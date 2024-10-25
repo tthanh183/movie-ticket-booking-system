@@ -109,6 +109,7 @@ export const useCinemaStore = create((set, get) => ({
           cinemas: updatedCinemas,
           transformedCinemas: updatedTransformedCinemas,
         });
+
         showToast(response.data.message, 'success');
       } else {
         showToast('Failed to update cinema. Please try again.', 'error');

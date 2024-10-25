@@ -16,7 +16,7 @@ const DeleteModal = ({ open, onCancel, onDelete }) => {
       <DialogHeader>Confirm Deletion</DialogHeader>
       <DialogBody divider>
         <Typography>
-          Are you sure you want to delete this {selectedCinema.name}? This
+          Are you sure you want to delete this {selectedCinema?.name}? This
           action cannot be undone.
         </Typography>
       </DialogBody>

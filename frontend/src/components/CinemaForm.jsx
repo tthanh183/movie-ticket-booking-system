@@ -4,12 +4,13 @@ import { Button, Typography, Input } from '@material-tailwind/react';
 import { useLocationsStore } from '../stores/useLocationsStore';
 import { useCinemaStore } from '../stores/useCinemaStore';
 
-const CinemaForm = ({ onCancel }) => {
+const CinemaForm = ({ onCancel, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     location: '',
   });
+
   const { locations, getLocations } = useLocationsStore();
   const { selectedCinema, updateCinema, createCinema, cinemaLoading } =
     useCinemaStore();
@@ -29,11 +30,7 @@ const CinemaForm = ({ onCancel }) => {
         location: locationId || '',
       });
     } else {
-      setFormData({
-        name: '',
-        address: '',
-        location: '',
-      });
+      setFormData({ name: '', address: '', location: '' });
     }
   }, [selectedCinema, locations]);
 
@@ -44,10 +41,11 @@ const CinemaForm = ({ onCancel }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (selectedCinema) {
-      updateCinema(selectedCinema._id, formData);
+      await updateCinema(selectedCinema._id, formData);
     } else {
-      createCinema(formData);
+      await createCinema(formData);
     }
+    onSuccess();
   };
 
   return (
@@ -77,12 +75,16 @@ const CinemaForm = ({ onCancel }) => {
         </select>
         <Input
           label="Cinema Name"
+          name="name"
+          type="text"
           value={formData.name}
           onChange={handleChange}
           required
         />
         <Input
           label="Address"
+          name="address"
+          type="text"
           value={formData.address}
           onChange={handleChange}
           required
@@ -107,6 +109,7 @@ const CinemaForm = ({ onCancel }) => {
 
 CinemaForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
 };
 
 export default CinemaForm;

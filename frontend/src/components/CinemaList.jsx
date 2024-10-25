@@ -13,7 +13,7 @@ const CinemaList = ({ cinemas, onOpen }) => {
   const [expandedLocation, setExpandedLocation] = useState(null);
   const [openHallManagement, setOpenHallManagement] = useState(false);
   const { locations, locationLoading, getLocations } = useLocationsStore();
-  const { deleteCinema, setSelectedCinema, clearSelectedCinema } =
+  const { getCinemas, deleteCinema, setSelectedCinema, clearSelectedCinema } =
     useCinemaStore();
 
   useEffect(() => {
@@ -55,6 +55,9 @@ const CinemaList = ({ cinemas, onOpen }) => {
     setOpenDeleteModal(false);
   };
 
+  const handleSubmit = () => {
+    getCinemas();
+  }
   return (
     <div>
       {locationLoading ? (
@@ -135,7 +138,7 @@ const CinemaList = ({ cinemas, onOpen }) => {
 
           {openHallManagement && (
             <div className="mt-8">
-              <HallManager onCancel={handleCloseHallManagement} />
+              <HallManager onCancel={handleCloseHallManagement} onSuccess={handleSubmit}/>
             </div>
           )}
 
