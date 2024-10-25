@@ -8,11 +8,10 @@ import {
 } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
 
-import { createMovieApi, updateMovieApi } from '../api/movieApi';
 import { uploadToCloudinary } from '../lib/uploadToCloudinary';
-import showToast from '../lib/showToast';
+import { useMovieStore } from '../stores/useMovieStore';
 
-const MovieForm = ({ movie, open, onCancel }) => {
+const MovieForm = ({ open, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -26,19 +25,21 @@ const MovieForm = ({ movie, open, onCancel }) => {
     trailer: null,
     isShowing: false,
   });
-  const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({
     poster: 0,
     trailer: 0,
   });
+  const [uploading, setUploading] = useState(false);
 
+  const { selectedMovie, movieLoading, updateMovie, createMovie } =
+    useMovieStore();
   useEffect(() => {
-    if (movie) {
-      setFormData(movie);
+    if (selectedMovie) {
+      setFormData(selectedMovie);
     } else {
       resetForm();
     }
-  }, [movie]);
+  }, [selectedMovie]);
 
   const resetForm = () => {
     setFormData({
@@ -66,7 +67,7 @@ const MovieForm = ({ movie, open, onCancel }) => {
   };
 
   const handleUploadAndSubmit = async () => {
-    setLoading(true);
+    setUploading(true);
     const uploadPromises = [];
 
     if (formData.poster) {
@@ -85,33 +86,21 @@ const MovieForm = ({ movie, open, onCancel }) => {
       );
     }
 
-    try {
-      const [posterUrl, trailerUrl] = await Promise.all(uploadPromises);
+    const [posterUrl, trailerUrl] = await Promise.all(uploadPromises);
+    setUploading(false);
+    const dataToSend = {
+      ...formData,
+      poster: posterUrl || formData.poster,
+      trailer: trailerUrl || formData.trailer,
+    };
 
-      const dataToSend = {
-        ...formData,
-        poster: posterUrl || formData.poster,
-        trailer: trailerUrl || formData.trailer,
-      };
-
-      let response;
-      if (movie) {
-        response = await updateMovieApi(movie._id, dataToSend);
-      } else {
-        response = await createMovieApi(dataToSend);
-      }
-
-      showToast(response.data.message, 'success');
-      resetForm();
-    } catch (error) {
-      showToast(
-        error.response?.data?.message || 'Failed to submit movie form',
-        'error'
-      );
-      onCancel();
-    } finally {
-      setLoading(false);
+    if (selectedMovie) {
+      updateMovie(selectedMovie._id, dataToSend);
+    } else {
+      createMovie(dataToSend);
     }
+    resetForm();
+    onCancel();
   };
 
   const handleSubmit = e => {
@@ -206,7 +195,7 @@ const MovieForm = ({ movie, open, onCancel }) => {
             accept="image/*"
             name="poster"
             onChange={handleChange}
-            required={!movie}
+            required={!selectedMovie}
           />
           {uploadProgress.poster > 0 && (
             <ProgressBar value={uploadProgress.poster} color="blue" />
@@ -220,7 +209,7 @@ const MovieForm = ({ movie, open, onCancel }) => {
             accept="video/*"
             name="trailer"
             onChange={handleChange}
-            required={!movie}
+            required={!selectedMovie}
           />
           {uploadProgress.trailer > 0 && (
             <ProgressBar value={uploadProgress.trailer} color="blue" />
@@ -231,12 +220,16 @@ const MovieForm = ({ movie, open, onCancel }) => {
           <Button color="red" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" color="blue" disabled={loading}>
-            {loading
-              ? 'Submitting...'
-              : movie
-              ? 'Update Movie'
-              : 'Create Movie'}
+          <Button
+            type="submit"
+            color="blue"
+            disabled={uploading || movieLoading}
+          >
+            {uploading || movieLoading
+              ? selectedMovie
+                ? 'Updating'
+                : 'Creating'
+              : 'Submit'}
           </Button>
         </div>
       </form>
@@ -245,10 +238,8 @@ const MovieForm = ({ movie, open, onCancel }) => {
 };
 
 MovieForm.propTypes = {
-  movie: PropTypes.object,
   open: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
-  onSuccess: PropTypes.func.isRequired,
 };
 
 export default MovieForm;

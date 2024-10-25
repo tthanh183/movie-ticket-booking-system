@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaPlusCircle } from 'react-icons/fa';
 import { Button, Spinner } from '@material-tailwind/react';
 
-import { toggleShowingMovieApi } from '../api/movieApi';
 import MovieForm from './MovieForm';
 import MovieFilter from './MovieFilter';
 import MovieSearch from './MovieSearch';
@@ -16,16 +15,15 @@ const MovieManager = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [moviesPerPage] = useState(4);
   const {
-    movies,
     filter,
     searchTerm,
-    selectedMovie,
     movieLoading,
     toggleShowingMovie,
     getMovies,
     setSelectedMovie,
     setFilter,
     setSearchTerm,
+    filteredMovies,
   } = useMovieStore();
 
   useEffect(() => {
@@ -53,14 +51,7 @@ const MovieManager = () => {
     setSelectedMovie(null);
   };
 
-  const filteredAndSearchedMovies = movies
-    .filter(movie => {
-      if (filter === 'showing') return movie.isShowing;
-      return true;
-    })
-    .filter(movie =>
-      movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const filteredAndSearchedMovies = filteredMovies();
 
   const totalPages = Math.ceil(
     filteredAndSearchedMovies.length / moviesPerPage
@@ -181,7 +172,6 @@ const MovieManager = () => {
           />
 
           <MovieForm
-            movie={selectedMovie}
             open={openForm}
             onCancel={handleCloseForm}
           />
