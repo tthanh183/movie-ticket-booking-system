@@ -2,72 +2,55 @@ import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaPlusCircle } from 'react-icons/fa';
 import { Button, Spinner } from '@material-tailwind/react';
 
-import { getAllMoviesApi, toggleShowingMovieApi } from '../api/movieApi';
+import { toggleShowingMovieApi } from '../api/movieApi';
 import MovieForm from './MovieForm';
 import MovieFilter from './MovieFilter';
 import MovieSearch from './MovieSearch';
 import Pagination from './Pagination';
 import CustomSkeleton from './CustomSkeleton';
+import { useMovieStore } from '../stores/useMovieStore';
 
 const MovieManager = () => {
-  const [movies, setMovies] = useState([]);
-  const [editMovie, setEditMovie] = useState(null);
   const [openForm, setOpenForm] = useState(false);
-  const [filter, setFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
   const [loadingToggles, setLoadingToggles] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [moviesPerPage] = useState(4);
-  const [loading, setLoading] = useState(false);
+  const {
+    movies,
+    filter,
+    searchTerm,
+    selectedMovie,
+    movieLoading,
+    toggleShowingMovie,
+    getMovies,
+    setSelectedMovie,
+    setFilter,
+    setSearchTerm,
+  } = useMovieStore();
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
-
-  const fetchMovies = async () => {
-    setLoading(true);
-    try {
-      const response = await getAllMoviesApi();
-      if (response.data.success) {
-        setMovies(response.data.movies);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    getMovies();
+  }, [getMovies]);
 
   const handleEditMovie = movie => {
-    setEditMovie(movie);
+    setSelectedMovie(movie);
     setOpenForm(true);
   };
 
-  const handleToggleShowing = async movieId => {
-    setLoadingToggles(prevState => ({ ...prevState, [movieId]: true }));
-    try {
-      await toggleShowingMovieApi(movieId);
-      fetchMovies();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoadingToggles(prev => ({ ...prev, [movieId]: false }));
-    }
+  const handleToggleShowing = async id => {
+    setLoadingToggles(prevState => ({ ...prevState, [id]: true }));
+    toggleShowingMovie(id);
+    setLoadingToggles(prevState => ({ ...prevState, [id]: false }));
   };
 
   const handleOpenForm = () => {
     setOpenForm(true);
-    setEditMovie(null);
+    setSelectedMovie(null);
   };
 
   const handleCloseForm = () => {
     setOpenForm(false);
-    setEditMovie(null);
-  };
-
-  const handleFormSubmit = () => {
-    handleCloseForm();
-    fetchMovies();
+    setSelectedMovie(null);
   };
 
   const filteredAndSearchedMovies = movies
@@ -90,7 +73,7 @@ const MovieManager = () => {
 
   return (
     <>
-      {loading ? (
+      {movieLoading ? (
         <div className="flex justify-center items-center min-h-screen">
           <CustomSkeleton />
         </div>
@@ -198,10 +181,9 @@ const MovieManager = () => {
           />
 
           <MovieForm
-            movie={editMovie}
+            movie={selectedMovie}
             open={openForm}
             onCancel={handleCloseForm}
-            onSuccess={handleFormSubmit}
           />
         </div>
       )}

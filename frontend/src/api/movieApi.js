@@ -1,9 +1,7 @@
 import axiosInstance from '../lib/axiosInstance';
 
-export const getShowingMoviesApi = async () =>
-  axiosInstance.get('/movies/showing');
 export const toggleShowingMovieApi = async movieId =>
-  axiosInstance.put(`/movies/showing/${movieId}`);
+  axiosInstance.put(`/movies/${movieId}/showing/`);
 export const getAllMoviesApi = async () => axiosInstance.get('/movies');
 export const getMovieByIdApi = async movieId =>
   axiosInstance.get(`/movies/${movieId}`);

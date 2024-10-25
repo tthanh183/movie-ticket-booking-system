@@ -12,7 +12,7 @@ import { createMovieApi, updateMovieApi } from '../api/movieApi';
 import { uploadToCloudinary } from '../lib/uploadToCloudinary';
 import showToast from '../lib/showToast';
 
-const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
+const MovieForm = ({ movie, open, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -103,7 +103,6 @@ const MovieForm = ({ movie, open, onCancel, onSuccess }) => {
 
       showToast(response.data.message, 'success');
       resetForm();
-      onSuccess();
     } catch (error) {
       showToast(
         error.response?.data?.message || 'Failed to submit movie form',

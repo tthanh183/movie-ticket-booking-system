@@ -3,7 +3,7 @@ import { Button } from '@material-tailwind/react';
 import ShowtimeCalendar from './ShowtimeCalendar';
 import { getAllCinemasByLocationApi } from '../api/cinemaApi';
 import { getHallsByCinemaIdApi } from '../api/hallApi';
-import { getShowingMoviesApi } from '../api/movieApi';
+import { getAllMoviesApi } from '../api/movieApi';
 import { getAllLocationsApi } from '../api/locationApi';
 import AddShowtimeModal from './AddShowtimeModal';
 
@@ -84,7 +84,7 @@ const ShowtimeManager = () => {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      const response = await getShowingMoviesApi();
+      const response = await getAllMoviesApi();
       if (response.data.success) {
         setMovies(response.data.movies);
       }
