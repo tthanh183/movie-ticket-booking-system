@@ -24,7 +24,7 @@ export const toggleShowingMovie = async (req, res, next) => {
 
 export const getAllMovies = async (req, res, next) => {
   try {
-    const movies = await Movie.find();
+    const movies = await Movie.find().sort({ releaseDate: -1 });
     res.status(200).json({ success: true, movies });
   } catch (error) {
     console.log('Error in getAllMovies', error);
