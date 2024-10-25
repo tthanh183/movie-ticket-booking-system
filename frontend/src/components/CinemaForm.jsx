@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Typography, Input } from '@material-tailwind/react';
+
 import { useLocationsStore } from '../stores/useLocationsStore';
 import { useCinemaStore } from '../stores/useCinemaStore';
 

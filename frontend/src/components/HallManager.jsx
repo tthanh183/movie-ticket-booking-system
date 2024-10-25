@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Button, Card, Input, Typography } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
 
-import Pagination from './Pagination';
 import { useCinemaStore } from '../stores/useCinemaStore';
 import { useHallStore } from '../stores/useHallStore';
+import Pagination from './Pagination';
 
 const HallManager = ({ onCancel }) => {
   const [formData, setFormData] = useState({

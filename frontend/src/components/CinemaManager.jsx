@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Button, Typography } from '@material-tailwind/react';
+import { FaPlusCircle } from 'react-icons/fa';
+
+import { useCinemaStore } from '../stores/useCinemaStore';
 import CinemaForm from './CinemaForm';
 import CinemaList from './CinemaList';
 import CustomSkeleton from './CustomSkeleton';
-import { FaPlusCircle } from 'react-icons/fa';
-import { useCinemaStore } from '../stores/useCinemaStore';
 
 const CinemaManager = () => {
   const [openForm, setOpenForm] = useState(false);
@@ -17,7 +18,7 @@ const CinemaManager = () => {
 
   const handleOpenForm = () => {
     clearSelectedCinema();
-    setOpenHallManagement(false); 
+    setOpenHallManagement(false);
     setOpenForm(true);
   };
 

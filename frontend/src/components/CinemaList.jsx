@@ -37,9 +37,9 @@ const CinemaList = ({
   };
 
   const handleOpenHallManagement = cinema => {
-    openForm(false); 
+    openForm(false);
     setSelectedCinema(cinema);
-    setOpenHallManagement(true); 
+    setOpenHallManagement(true);
   };
 
   const handleCloseHallManagement = () => {
@@ -50,7 +50,7 @@ const CinemaList = ({
   const handleOpenForm = cinema => {
     setSelectedCinema(cinema);
     openForm(true);
-    setOpenHallManagement(false); 
+    setOpenHallManagement(false);
   };
 
   const handleOpenDeleteModal = cinema => {
