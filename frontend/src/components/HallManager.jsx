@@ -1,19 +1,12 @@
 import { useEffect, useState } from 'react';
-import {
-  Button,
-  Card,
-  Input,
-  Typography,
-  Select,
-  Option,
-} from '@material-tailwind/react';
+import { Button, Card, Input, Typography } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
 
 import Pagination from './Pagination';
 import { useCinemaStore } from '../stores/useCinemaStore';
 import { useHallStore } from '../stores/useHallStore';
 
-const HallManager = ({ onCancel, onSuccess }) => {
+const HallManager = ({ onCancel }) => {
   const [formData, setFormData] = useState({
     name: '',
     totalSeats: '',
@@ -40,21 +33,31 @@ const HallManager = ({ onCancel, onSuccess }) => {
     if (selectedCinema) {
       getHallsByCinema(selectedCinema._id);
     }
-  }, [selectedCinema, getHallsByCinema, selectedHall]);
+  }, [selectedCinema, getHallsByCinema]);
+
+  useEffect(() => {
+    if (selectedHall) {
+      setFormData({
+        name: selectedHall.name,
+        totalSeats: selectedHall.totalSeats,
+        status: selectedHall.status,
+      });
+    } else {
+      setFormData({
+        name: '',
+        totalSeats: '',
+        status: 'active',
+      });
+    }
+  }, [selectedHall]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleStatusChange = e => {
-    setFormData({ ...formData, status: e.target.value });
-  };
-
   const handleAddOrUpdateHall = async () => {
     if (selectedHall) {
-      console.log('formData', formData);
-
       await updateHall(selectedCinema._id, selectedHall._id, formData);
     } else {
       await createHall(selectedCinema._id, formData);
@@ -64,7 +67,7 @@ const HallManager = ({ onCancel, onSuccess }) => {
       totalSeats: '',
       status: 'active',
     });
-    onSuccess();
+    setSelectedHall(null);
   };
 
   const handleDeleteHall = () => {
@@ -90,7 +93,7 @@ const HallManager = ({ onCancel, onSuccess }) => {
         <Input
           label="Hall Name"
           name="name"
-          value={selectedHall.name}
+          value={formData.name}
           onChange={handleInputChange}
           className="mb-4"
           required
@@ -99,20 +102,21 @@ const HallManager = ({ onCancel, onSuccess }) => {
           label="Total Seats"
           name="totalSeats"
           type="number"
-          value={selectedHall?.totalSeats}
+          value={formData.totalSeats}
           onChange={handleInputChange}
           className="mb-4"
           required
         />
-        <Select
-          label="Status"
-          onChange={handleStatusChange}
-          value={selectedHall?.status}
-          className="mb-4"
+        <select
+          id="status"
+          name="status"
+          onChange={handleInputChange}
+          value={formData.status}
+          className="block w-full p-2 border border-gray-300 rounded-md"
         >
-          <Option value="active">Active</Option>
-          <Option value="inactive">Inactive</Option>
-        </Select>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
         <Button
           color="green"
           onClick={handleAddOrUpdateHall}
@@ -170,7 +174,6 @@ const HallManager = ({ onCancel, onSuccess }) => {
 
 HallManager.propTypes = {
   onCancel: PropTypes.func.isRequired,
-  onSuccess: PropTypes.func.isRequired,
 };
 
 export default HallManager;
