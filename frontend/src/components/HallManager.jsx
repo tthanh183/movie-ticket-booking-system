@@ -53,6 +53,8 @@ const HallManager = ({ onCancel, onSuccess }) => {
 
   const handleAddOrUpdateHall = async () => {
     if (selectedHall) {
+      console.log('formData', formData);
+
       await updateHall(selectedCinema._id, selectedHall._id, formData);
     } else {
       await createHall(selectedCinema._id, formData);
@@ -88,7 +90,7 @@ const HallManager = ({ onCancel, onSuccess }) => {
         <Input
           label="Hall Name"
           name="name"
-          value={selectedHall?.name}
+          value={selectedHall.name}
           onChange={handleInputChange}
           className="mb-4"
           required

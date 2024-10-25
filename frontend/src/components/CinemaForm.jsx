@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Button, Typography, Input } from '@material-tailwind/react';
 import { useLocationsStore } from '../stores/useLocationsStore';
 import { useCinemaStore } from '../stores/useCinemaStore';
-import { set } from 'mongoose';
 
 const CinemaForm = ({ onCancel }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +14,7 @@ const CinemaForm = ({ onCancel }) => {
   const { locations, getLocations } = useLocationsStore();
   const { selectedCinema, createCinema, cinemaLoading, clearSelectedCinema } =
     useCinemaStore();
-
+  
   const updateCinema = useCinemaStore(state => state.updateCinema);
   useEffect(() => {
     getLocations();

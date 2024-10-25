@@ -92,4 +92,5 @@ export const useHallStore = create(set => ({
   },
   setSelectedHall: hall => set({ selectedHall: hall }),
   clearSelectedHall: () => set({ selectedHall: null }),
+  
 }));

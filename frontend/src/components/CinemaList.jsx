@@ -8,12 +8,14 @@ import DeleteModal from './DeleteModal';
 import HallManager from './HallManager';
 import CustomSkeleton from './CustomSkeleton';
 
-const CinemaList = ({ openForm, closeForm }) => {
+const CinemaList = ({
+  openForm,
+  openHallManagement,
+  setOpenHallManagement,
+}) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState(null);
-  const [openHallManagement, setOpenHallManagement] = useState(false);
   const { locations, locationLoading, getLocations } = useLocationsStore();
-
   const {
     selectedCinema,
     transformedCinemas,
@@ -21,7 +23,6 @@ const CinemaList = ({ openForm, closeForm }) => {
     setSelectedCinema,
     clearSelectedCinema,
   } = useCinemaStore();
-
   useEffect(() => {
     getLocations();
   }, [getLocations]);
@@ -36,9 +37,9 @@ const CinemaList = ({ openForm, closeForm }) => {
   };
 
   const handleOpenHallManagement = cinema => {
-    closeForm();
+    openForm(false); 
     setSelectedCinema(cinema);
-    setOpenHallManagement(true);
+    setOpenHallManagement(true); 
   };
 
   const handleCloseHallManagement = () => {
@@ -48,7 +49,8 @@ const CinemaList = ({ openForm, closeForm }) => {
 
   const handleOpenForm = cinema => {
     setSelectedCinema(cinema);
-    openForm();
+    openForm(true);
+    setOpenHallManagement(false); 
   };
 
   const handleOpenDeleteModal = cinema => {
@@ -106,11 +108,8 @@ const CinemaList = ({ openForm, closeForm }) => {
                   >
                     {cinema.name}
                   </Typography>
-                  <Typography color="blue-gray" className="mb-2 min-h-20">
+                  <Typography color="blue-gray" className="mb-2 min-h-10">
                     {cinema.address}
-                  </Typography>
-                  <Typography color="blue-gray" className="mb-2 min-h-2">
-                    {cinema.totalHalls} Halls Available
                   </Typography>
                   <div className="flex space-x-4">
                     <Button
@@ -161,7 +160,8 @@ const CinemaList = ({ openForm, closeForm }) => {
 
 CinemaList.propTypes = {
   openForm: PropTypes.func.isRequired,
-  closeForm: PropTypes.func.isRequired,
+  openHallManagement: PropTypes.bool.isRequired,
+  setOpenHallManagement: PropTypes.func.isRequired,
 };
 
 export default CinemaList;
