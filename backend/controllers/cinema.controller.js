@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Cinema from '../models/cinema.model.js';
 import Hall from '../models/hall.model.js';
+import Location from '../models/location.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
 const countHalls = async cinemaId => {
@@ -84,11 +85,26 @@ export const getCinemaById = async (req, res, next) => {
 export const createCinema = async (req, res, next) => {
   const { name, location, address } = req.body;
   try {
-    const cinema = await Cinema.create({ name, location, address, totalHalls:0 });
+    const cinema = await Cinema.create({
+      name,
+      location,
+      address,
+      totalHalls: 0,
+    });
+    const locationExists = await Location.findById(location);
+
+    if (!locationExists) {
+      return next(errorCreator('Location not found', 404));
+    }
+
     res.status(201).json({
       success: true,
       message: 'Cinema created successfully',
-      cinema,
+      cinema: {
+        ...cinema._doc,
+        location: locationExists.name,
+        totalHalls: 0,
+      },
     });
   } catch (error) {
     console.log('Error in createCinema', error);
@@ -98,7 +114,7 @@ export const createCinema = async (req, res, next) => {
 
 export const updateCinema = async (req, res, next) => {
   const { cinemaId } = req.params;
-  const { name, address, totalHalls } = req.body;
+  const { name, address, location } = req.body;
 
   try {
     const cinema = await Cinema.findById(cinemaId);
@@ -108,14 +124,18 @@ export const updateCinema = async (req, res, next) => {
 
     cinema.name = name;
     cinema.address = address;
-    cinema.totalHalls = totalHalls;
 
+    const totalHalls = await countHalls(cinemaId);
     await cinema.save();
 
     res.status(200).json({
       success: true,
       message: 'Cinema updated successfully',
-      cinema,
+      cinema: {
+        ...cinema._doc,
+        location: location,
+        totalHalls,
+      },
     });
   } catch (error) {
     console.log('Error in updateCinema', error);
@@ -193,7 +213,7 @@ export const createHall = async (req, res, next) => {
       return next(errorCreator('Cinema not found', 404));
     }
 
-    const seatsPerRow = 10; 
+    const seatsPerRow = 10;
     const numberOfRows = Math.ceil(totalSeats / seatsPerRow);
 
     const seatLayout = [];
@@ -232,7 +252,6 @@ export const createHall = async (req, res, next) => {
     next(error);
   }
 };
-
 
 export const updateHall = async (req, res, next) => {
   const { cinemaId, hallId } = req.params;
