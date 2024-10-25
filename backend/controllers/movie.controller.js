@@ -1,16 +1,6 @@
 import Movie from '../models/movie.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
-export const getShowingMovies = async (req, res, next) => {
-  try {
-    const movies = await Movie.find({ isShowing: true });
-    res.status(200).json({ success: true, movies });
-  } catch (error) {
-    console.log('Error in getShowingMovies', error);
-    next(error);
-  }
-};
-
 export const toggleShowingMovie = async (req, res, next) => {
   const { movieId } = req.params;
   try {
