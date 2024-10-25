@@ -32,6 +32,7 @@ const HallManager = ({ onCancel }) => {
   useEffect(() => {
     if (selectedCinema) {
       getHallsByCinema(selectedCinema._id);
+      setCurrentPage(1);
     }
   }, [selectedCinema, getHallsByCinema]);
 
@@ -81,46 +82,65 @@ const HallManager = ({ onCancel }) => {
   const totalPages = Math.ceil(halls.length / hallsPerPage);
 
   return (
-    <div>
-      <Typography variant="h5" color="blue-gray" className="font-bold mb-4">
+    <div className="p-4 bg-white rounded-lg shadow-lg">
+      <Typography
+        variant="h4"
+        color="blue-gray"
+        className="font-bold mb-6 text-center"
+      >
         Manage Halls for {selectedCinema?.name}
       </Typography>
 
-      <Card className="p-4 mb-4 shadow-lg border border-gray-300 ">
-        <Typography variant="h6" color="blue-gray" className="font-bold mb-2">
+      <Card className="p-6 mb-6 shadow-md border border-gray-200 rounded-md ">
+        <Typography
+          variant="h5"
+          color="blue-gray"
+          className="font-semibold mb-6 text-center"
+        >
           {selectedHall ? 'Edit Hall' : 'Add New Hall'}
         </Typography>
-        <Input
-          label="Hall Name"
-          name="name"
-          value={formData.name}
-          onChange={handleInputChange}
-          className="mb-4"
-          required
-        />
-        <Input
-          label="Total Seats"
-          name="totalSeats"
-          type="number"
-          value={formData.totalSeats}
-          onChange={handleInputChange}
-          className="mb-4"
-          required
-        />
-        <select
-          id="status"
-          name="status"
-          onChange={handleInputChange}
-          value={formData.status}
-          className="block w-full p-2 border border-gray-300 rounded-md"
-        >
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+
+        <div className="mb-4">
+          <Input
+            label="Hall Name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            className="border-gray-300"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <Input
+            label="Total Seats"
+            name="totalSeats"
+            type="number"
+            value={formData.totalSeats}
+            onChange={handleInputChange}
+            className="border-gray-300"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <select
+            id="status"
+            name="status"
+            onChange={handleInputChange}
+            value={formData.status}
+            className="block w-full p-3 border border-gray-300 rounded-md text-gray-600 bg-white"
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
         <Button
           color="green"
           onClick={handleAddOrUpdateHall}
           disabled={cinemaLoading || hallLoading}
+          fullWidth
         >
           {cinemaLoading || hallLoading
             ? 'Loading...'
@@ -130,29 +150,43 @@ const HallManager = ({ onCancel }) => {
         </Button>
       </Card>
 
-      <Card className="p-4 shadow-lg border border-gray-300">
-        <Typography variant="h6" color="blue-gray" className="font-bold mb-2">
+      <Card className="p-4 shadow-md border border-gray-200 rounded-md">
+        <Typography
+          variant="h5"
+          color="blue-gray"
+          className="font-semibold mb-4 text-center"
+        >
           Halls List
         </Typography>
         {currentHalls.map(hall => (
           <div
             key={hall._id}
-            className="flex justify-between items-center mb-2 border-b border-gray-200 pb-2"
+            className="flex justify-between items-center p-2 mb-2 border-b border-gray-200"
           >
             <div>
-              <Typography className="font-bold">{hall.name}</Typography>
-              <Typography>{hall.totalSeats} Seats</Typography>
-              <Typography>Status: {hall.status}</Typography>
+              <Typography className="font-bold text-lg">{hall.name}</Typography>
+              <Typography className="text-gray-500">
+                {hall.totalSeats} Seats
+              </Typography>
+              <Typography className="text-gray-500">
+                Status: {hall.status}
+              </Typography>
             </div>
             <div className="flex space-x-2">
               <Button
                 onClick={() => setSelectedHall(hall)}
                 color="yellow"
                 size="sm"
+                className="rounded-full"
               >
                 Edit
               </Button>
-              <Button onClick={handleDeleteHall} color="red" size="sm">
+              <Button
+                onClick={handleDeleteHall}
+                color="red"
+                size="sm"
+                className="rounded-full"
+              >
                 Delete
               </Button>
             </div>
@@ -165,7 +199,7 @@ const HallManager = ({ onCancel }) => {
         />
       </Card>
 
-      <Button color="red" onClick={onCancel} className="mt-4">
+      <Button color="red" onClick={onCancel} className="mt-6" fullWidth>
         Cancel
       </Button>
     </div>
