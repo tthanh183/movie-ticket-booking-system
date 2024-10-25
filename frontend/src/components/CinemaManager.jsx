@@ -8,8 +8,7 @@ import { useCinemaStore } from '../stores/useCinemaStore';
 
 const CinemaManager = () => {
   const [openForm, setOpenForm] = useState(false);
-  const { transformedCinemas, getCinemas, cinemaLoading, clearSelectedCinema } =
-    useCinemaStore();
+  const { getCinemas, cinemaLoading, clearSelectedCinema } = useCinemaStore();
 
   useEffect(() => {
     getCinemas();
@@ -24,10 +23,6 @@ const CinemaManager = () => {
     setOpenForm(false);
   };
 
-  const handleSubmitForm = () => {
-    setOpenForm(false);
-    getCinemas();
-  };
 
   return (
     <>
@@ -54,14 +49,9 @@ const CinemaManager = () => {
             </Button>
           </div>
 
-          {openForm && (
-            <CinemaForm
-              onCancel={handleCloseForm}
-              onSuccess={handleSubmitForm}
-            />
-          )}
+          {openForm && <CinemaForm onCancel={handleCloseForm} />}
 
-          <CinemaList cinemas={transformedCinemas} onOpen={handleOpenForm} />
+          <CinemaList openForm={handleOpenForm} closeForm={handleCloseForm} />
         </div>
       )}
     </>

@@ -8,13 +8,19 @@ import DeleteModal from './DeleteModal';
 import HallManager from './HallManager';
 import CustomSkeleton from './CustomSkeleton';
 
-const CinemaList = ({ cinemas, onOpen }) => {
+const CinemaList = ({ openForm, closeForm }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState(null);
   const [openHallManagement, setOpenHallManagement] = useState(false);
   const { locations, locationLoading, getLocations } = useLocationsStore();
-  const { getCinemas, deleteCinema, setSelectedCinema, clearSelectedCinema } =
-    useCinemaStore();
+
+  const {
+    selectedCinema,
+    transformedCinemas,
+    deleteCinema,
+    setSelectedCinema,
+    clearSelectedCinema,
+  } = useCinemaStore();
 
   useEffect(() => {
     getLocations();
@@ -30,6 +36,7 @@ const CinemaList = ({ cinemas, onOpen }) => {
   };
 
   const handleOpenHallManagement = cinema => {
+    closeForm();
     setSelectedCinema(cinema);
     setOpenHallManagement(true);
   };
@@ -41,7 +48,7 @@ const CinemaList = ({ cinemas, onOpen }) => {
 
   const handleOpenForm = cinema => {
     setSelectedCinema(cinema);
-    onOpen();
+    openForm();
   };
 
   const handleOpenDeleteModal = cinema => {
@@ -50,14 +57,11 @@ const CinemaList = ({ cinemas, onOpen }) => {
   };
 
   const handleDelete = async () => {
-    deleteCinema();
+    deleteCinema(selectedCinema._id);
     clearSelectedCinema();
     setOpenDeleteModal(false);
   };
 
-  const handleSubmit = () => {
-    getCinemas();
-  }
   return (
     <div>
       {locationLoading ? (
@@ -89,7 +93,7 @@ const CinemaList = ({ cinemas, onOpen }) => {
 
           {expandedLocation && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cinemas[expandedLocation]?.map(cinema => (
+              {transformedCinemas[expandedLocation]?.map(cinema => (
                 <Card
                   key={cinema._id}
                   shadow={true}
@@ -138,7 +142,7 @@ const CinemaList = ({ cinemas, onOpen }) => {
 
           {openHallManagement && (
             <div className="mt-8">
-              <HallManager onCancel={handleCloseHallManagement} onSuccess={handleSubmit}/>
+              <HallManager onCancel={handleCloseHallManagement} />
             </div>
           )}
 
@@ -156,8 +160,8 @@ const CinemaList = ({ cinemas, onOpen }) => {
 };
 
 CinemaList.propTypes = {
-  cinemas: PropTypes.object.isRequired,
-  onOpen: PropTypes.func.isRequired,
+  openForm: PropTypes.func.isRequired,
+  closeForm: PropTypes.func.isRequired,
 };
 
 export default CinemaList;

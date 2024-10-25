@@ -82,8 +82,6 @@ export const useCinemaStore = create((set, get) => ({
           transformedCinemas: updatedTransformedCinemas,
         });
         showToast(response.data.message, 'success');
-      } else {
-        showToast('Failed to create cinema. Please try again.', 'error');
       }
     } catch (error) {
       showToast(
@@ -98,7 +96,8 @@ export const useCinemaStore = create((set, get) => ({
   updateCinema: async (id, data) => {
     set({ cinemaLoading: true });
     try {
-      const response = await updateCinemaApi(id, data);
+      const response = await updateCinemaApi(id, data);   
+         
       if (response.data.success) {
         const updatedCinemas = get().cinemas.map(cinema =>
           cinema._id === id ? response.data.cinema : cinema

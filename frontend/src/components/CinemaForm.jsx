@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { Button, Typography, Input } from '@material-tailwind/react';
 import { useLocationsStore } from '../stores/useLocationsStore';
 import { useCinemaStore } from '../stores/useCinemaStore';
+import { set } from 'mongoose';
 
-const CinemaForm = ({ onCancel, onSuccess }) => {
+const CinemaForm = ({ onCancel }) => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -12,22 +13,20 @@ const CinemaForm = ({ onCancel, onSuccess }) => {
   });
 
   const { locations, getLocations } = useLocationsStore();
-  const { selectedCinema, updateCinema, createCinema, cinemaLoading } =
+  const { selectedCinema, createCinema, cinemaLoading, clearSelectedCinema } =
     useCinemaStore();
 
+  const updateCinema = useCinemaStore(state => state.updateCinema);
   useEffect(() => {
     getLocations();
   }, [getLocations]);
 
   useEffect(() => {
     if (selectedCinema) {
-      const locationId = locations.find(
-        location => location.name === selectedCinema.location
-      )?._id;
       setFormData({
         name: selectedCinema.name,
         address: selectedCinema.address,
-        location: locationId || '',
+        location: selectedCinema.location,
       });
     } else {
       setFormData({ name: '', address: '', location: '' });
@@ -43,11 +42,14 @@ const CinemaForm = ({ onCancel, onSuccess }) => {
     if (selectedCinema) {
       await updateCinema(selectedCinema._id, formData);
     } else {
+      console.log('formData', formData);
+      
       await createCinema(formData);
     }
-    onSuccess();
+    clearSelectedCinema();
   };
 
+  
   return (
     <form
       onSubmit={handleSubmit}
@@ -109,7 +111,6 @@ const CinemaForm = ({ onCancel, onSuccess }) => {
 
 CinemaForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
-  onSuccess: PropTypes.func.isRequired,
 };
 
 export default CinemaForm;
