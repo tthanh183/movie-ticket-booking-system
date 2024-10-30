@@ -4,7 +4,7 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import AddShowtimeModal from './AddShowtimeModal';
 import { useShowtimeStore } from '../stores/useShowtimeStore';
-import { useMovieStore } from '../stores/useMovieStore';
+import { useHallStore } from '../stores/useHallStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -12,23 +12,23 @@ const ShowtimeCalendar = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const { showtimes, getShowtimesByHall } = useShowtimeStore();
-  const { movies } = useMovieStore();
+  const { selectedHall } = useHallStore();
 
   useEffect(() => {
-    getShowtimesByHall();
-  }, []);
+    if (selectedHall) {
+      getShowtimesByHall(selectedHall._id);
+    }
+  }, [getShowtimesByHall, selectedHall]);
 
   const events = useMemo(
     () =>
       showtimes.map(showtime => ({
-        title:
-          movies.find(movie => movie._id === showtime.movieId)?.title ||
-          'No Title',
+        title: showtime.movie.title || 'No Title',
         start: new Date(showtime.startTime),
-        end: new Date(showtime.startTime), 
+        end: new Date(showtime.startTime),
         allDay: false,
       })),
-    [showtimes, movies]
+    [showtimes]
   );
 
   const handleSelectSlot = ({ start }) => {
@@ -50,7 +50,7 @@ const ShowtimeCalendar = () => {
         style={{ height: 500 }}
         selectable
         onSelectSlot={handleSelectSlot}
-        onSelectEvent={event => alert(`Selected event: ${event.title}`)} 
+        onSelectEvent={event => alert(`Selected event: ${event.title}`)}
       />
 
       <AddShowtimeModal

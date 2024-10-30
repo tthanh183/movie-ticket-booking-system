@@ -29,10 +29,10 @@ export const useShowtimeStore = create((set, get) => ({
       set({ showtimeLoading: false });
     }
   },
-  createShowtime: async showtime => {
+  createShowtime: async (hallId, showtime) => {
     set({ showtimeLoading: true });
     try {
-      const response = await createShowtimeApi(showtime);
+      const response = await createShowtimeApi(hallId, showtime);
       if (response.data.success) {
         showToast(response.data.message, 'success');
         const updatedShowtimes = [...get().showtimes, response.data.showtime];

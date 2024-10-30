@@ -30,7 +30,7 @@ const ShowtimeManager = () => {
     if (selectedLocation) getCinemasByLocation(selectedLocation._id);
     if (selectedCinema) getHallsByCinema(selectedCinema._id);
     if (selectedHall) getShowtimesByHall(selectedHall._id);
-  }, [selectedLocation, selectedCinema, selectedHall]);
+  }, [selectedLocation, selectedCinema, selectedHall, getCinemasByLocation, getHallsByCinema, getShowtimesByHall]);
 
   const handleCloseForm = () => {
     setModalOpen(false);
