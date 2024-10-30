@@ -4,13 +4,14 @@ import errorCreator from '../utils/errorCreator.js';
 import Movie from '../models/movie.model.js';
 
 export const getShowtimesByHallId = async (req, res) => {
-  const { hall } = req.params;
+  const { hallId } = req.params;
   try {
-    const showtimes = await Showtime.find({ hall });
+    const showtimes = await Showtime.find({ hall: hallId }).populate('movie');
     res.status(200).json({
       success: true,
       showtimes,
     });
+
   } catch (error) {
     errorCreator(error, res);
   }
