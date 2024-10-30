@@ -1,44 +1,64 @@
-import React from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useState, useEffect, useMemo } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import AddShowtimeModal from './AddShowtimeModal';
+import { useShowtimeStore } from '../stores/useShowtimeStore';
+import { useMovieStore } from '../stores/useMovieStore';
 
-const ShowtimeCalendar = ({ showtimesData }) => {
-  const onDragEnd = (result) => {
-    // TODO: Implement drag and drop reorder logic
+const localizer = momentLocalizer(moment);
+
+const ShowtimeCalendar = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const { showtimes, getShowtimesByHall } = useShowtimeStore();
+  const { movies } = useMovieStore();
+
+  useEffect(() => {
+    getShowtimesByHall();
+  }, []);
+
+  const events = useMemo(
+    () =>
+      showtimes.map(showtime => ({
+        title:
+          movies.find(movie => movie._id === showtime.movieId)?.title ||
+          'No Title',
+        start: new Date(showtime.startTime),
+        end: new Date(showtime.startTime), 
+        allDay: false,
+      })),
+    [showtimes, movies]
+  );
+
+  const handleSelectSlot = ({ start }) => {
+    setSelectedDate(start);
+    setModalOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setModalOpen(false);
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="showtimes">
-        {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef}>
-            {showtimesData.length === 0 ? (
-              <p>No showtimes available.</p>
-            ) : (
-              showtimesData.map((showtime, index) => (
-                <Draggable
-                  key={showtime.movieId}
-                  draggableId={showtime.movieId}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      ref={provided.innerRef}
-                      className="bg-gray-100 p-2 mb-2 rounded shadow-md"
-                    >
-                      <p>Movie ID: {showtime.movieId}</p>
-                      <p>Start Time: {showtime.startTime}</p>
-                    </div>
-                  )}
-                </Draggable>
-              ))
-            )}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <div className="p-8">
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        selectable
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={event => alert(`Selected event: ${event.title}`)} 
+      />
+
+      <AddShowtimeModal
+        open={modalOpen}
+        onClose={handleCloseForm}
+        selectedDate={selectedDate}
+      />
+    </div>
   );
 };
 

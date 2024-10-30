@@ -5,6 +5,7 @@ import { getAllLocationsApi } from '../api/locationApi';
 
 export const useLocationsStore = create(set => ({
   locations: [],
+  selectedLocation: null,
   locationLoading: false,
 
   getLocations: async () => {
@@ -25,4 +26,6 @@ export const useLocationsStore = create(set => ({
       set({ locationLoading: false });
     }
   },
+  setSelectedLocation: location => set({ selectedLocation: location }),
+  clearSelectedLocation: () => set({ selectedLocation: null }),
 }));

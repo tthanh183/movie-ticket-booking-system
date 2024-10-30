@@ -1,7 +1,7 @@
 import axiosInstance from '../lib/axiosInstance';
 
-export const getAllShowtimesApi = () =>
-  axiosInstance.get('/showtimes');
+export const getShowtimeByHallIdApi = hallId =>
+  axiosInstance.get(`/showtimes/halls/${hallId}`);
 
 export const createShowtimeApi = showtimeData =>
   axiosInstance.post('/showtimes', showtimeData);

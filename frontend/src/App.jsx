@@ -23,7 +23,9 @@ function App() {
         <Spinner className="text-blue-500" />
       </div>
     );
-
+    //     "react-beautiful-dnd": "^13.1.1",
+    // "react-calendar": "^5.0.0",
+    // "react-datepicker": "^7.5.0",
   return (
     <div className="relative z-50 pt-20'">
       <Header />

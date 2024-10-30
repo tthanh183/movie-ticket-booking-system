@@ -1,74 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Dialog, Button } from '@material-tailwind/react';
 import PropTypes from 'prop-types';
-import { getCinemaByIdApi } from '../api/cinemaApi';
-import { createShowtimeApi } from '../api/showtimeApi';
-import showToast from '../lib/showToast';
-import { getHallsByCinemaIdApi } from '../api/hallApi';
+import { useCinemaStore } from '../stores/useCinemaStore';
+import { useMovieStore } from '../stores/useMovieStore';
+import { useHallStore } from '../stores/useHallStore';
+import { useShowtimeStore } from '../stores/useShowtimeStore';
 
-const AddShowtimeModal = ({
-  cinema,
-  hall,
-  movies,
-  open,
-  onClose,
-  showtimes,
-  addShowtime,
-}) => {
+const AddShowtimeModal = ({ open, onClose }) => {
   const [selectedMovie, setSelectedMovie] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [price, setPrice] = useState('');
-  const [cinemaName, setCinemaName] = useState('');
-  const [hallName, setHallName] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (cinema && hall) {
-      fetchData();
-    }
-  }, [cinema, hall]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const cinemaResponse = await getCinemaByIdApi(cinema);
-      if (cinemaResponse.data.success) {
-        setCinemaName(cinemaResponse.data.cinema.name);
-      }
-
-      const hallResponse = await getHallsByCinemaIdApi(cinema, hall);
-      if (hallResponse.data.success) {
-        setHallName(hallResponse.data.hall.name);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { selectedCinema, cinemaLoading } = useCinemaStore();
+  const { selectedHall, hallLoading } = useHallStore();
+  const { movies } = useMovieStore();
+  const { showtimes, showtimeLoading, createShowtime } = useShowtimeStore();
 
   const handleAddShowtime = async e => {
     e.preventDefault();
-    setLoading(true);
     const showtime = {
       movie: selectedMovie,
-      hall: hall,
-      startTime: selectedTime.toISOString(),
+      hall: selectedHall,
+      startTime: Date(selectedTime),
       price: new Number(price),
     };
-    try {
-      const response = await createShowtimeApi(showtime);
-      if (response.data.success) {
-        onClose();
-        showToast(response.data.message, 'success');
-        addShowtime(response.data.showtime);
-      }
-    } catch (error) {
-      console.error(error.response?.data?.message, error);
-      showToast(error.response?.data?.message, 'error');
-    } finally {
-      setLoading(false);
-    }
+    createShowtime(showtime);
+    onClose();
   };
 
   return (
@@ -82,15 +38,15 @@ const AddShowtimeModal = ({
         <div className="p-6">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Add Showtime</h3>
 
-          {loading ? (
+          {cinemaLoading || hallLoading || showtimeLoading ? (
             <p className="text-gray-500">Loading...</p>
           ) : (
             <div className="mb-4">
               <p className="text-gray-700">
-                <strong>Cinema:</strong> {cinemaName || 'N/A'}
+                <strong>Cinema:</strong> {selectedCinema?.name || 'N/A'}
               </p>
               <p className="text-gray-700">
-                <strong>Hall:</strong> {hallName || 'N/A'}
+                <strong>Hall:</strong> {selectedHall?.name || 'N/A'}
               </p>
             </div>
           )}
@@ -189,13 +145,8 @@ const AddShowtimeModal = ({
 };
 
 AddShowtimeModal.propTypes = {
-  cinema: PropTypes.string,
-  hall: PropTypes.string,
-  movies: PropTypes.array,
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  showtimes: PropTypes.array,
-  addShowtime: PropTypes.func,
 };
 
 export default AddShowtimeModal;

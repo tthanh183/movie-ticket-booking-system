@@ -6,6 +6,7 @@ import {
   createCinemaApi,
   deleteCinemaApi,
   getAllCinemasApi,
+  getAllCinemasByLocationApi,
   getCinemaByIdApi,
   updateCinemaApi,
 } from '../api/cinemaApi';
@@ -96,8 +97,8 @@ export const useCinemaStore = create((set, get) => ({
   updateCinema: async (id, data) => {
     set({ cinemaLoading: true });
     try {
-      const response = await updateCinemaApi(id, data);   
-         
+      const response = await updateCinemaApi(id, data);
+
       if (response.data.success) {
         const updatedCinemas = get().cinemas.map(cinema =>
           cinema._id === id ? response.data.cinema : cinema
@@ -140,6 +141,26 @@ export const useCinemaStore = create((set, get) => ({
         showToast(response.data.message, 'success');
       } else {
         showToast('Failed to delete cinema. Please try again.', 'error');
+      }
+    } catch (error) {
+      showToast(
+        error.response.data.message ||
+          'Something went wrong. Please try again later.'
+      );
+    } finally {
+      set({ cinemaLoading: false });
+    }
+  },
+  getCinemasByLocation: async locationId => {
+    set({ cinemaLoading: true });
+    try {
+      const response = await getAllCinemasByLocationApi(locationId);
+      if (response.data.success) {
+        const transformedCinemas = transformCinemasByLocation(
+          response.data.cinemas
+        );
+
+        set({ cinemas: response.data.cinemas, transformedCinemas });
       }
     } catch (error) {
       showToast(
