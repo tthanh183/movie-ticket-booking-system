@@ -2,32 +2,54 @@ import { useState } from 'react';
 import { Dialog, Button } from '@material-tailwind/react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import PropTypes from 'prop-types';
+
 import { useMovieStore } from '../stores/useMovieStore';
 import { useShowtimeStore } from '../stores/useShowtimeStore';
 import { useHallStore } from '../stores/useHallStore';
 import { useLocationsStore } from '../stores/useLocationsStore';
+import { useCinemaStore } from '../stores/useCinemaStore';
 
-const AddShowtimeModal = ({ open, onClose, selectedDate }) => {
+const AddShowtimeModal = ({ open, onClose }) => {
+  const [showtimes, setShowtimes] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState('');
   const [price, setPrice] = useState('');
-  const [startTime, setStartTime] = useState(selectedDate || new Date());
+  const [startTime, setStartTime] = useState(new Date());
   const { clearSelectedLocation } = useLocationsStore();
   const { movies, clearSelectedMovie } = useMovieStore();
   const { selectedHall, clearSelectedHall } = useHallStore();
   const { createShowtime } = useShowtimeStore();
+  const { clearSelectedCinema } = useCinemaStore();
 
-  const handleAddShowtime = async e => {
-    e.preventDefault();
-    const showtime = {
+  const addShowtimeToList = () => {
+    const newShowtime = {
       movie: selectedMovie,
       hall: selectedHall,
-      startTime: selectedDate,
+      startTime,
       price: parseFloat(price),
     };
-    createShowtime(selectedHall._id, showtime);
+    setShowtimes([...showtimes, newShowtime]);
+    setPrice('');
+  };
+
+  const handleCancel = () => {
     clearSelectedLocation();
     clearSelectedMovie();
     clearSelectedHall();
+    setShowtimes([]);
+    onClose();
+  };
+
+  const handleSaveAllShowtimes = async e => {
+    e.preventDefault();
+    for (const showtime of showtimes) {
+      await createShowtime(selectedHall._id, showtime);
+    }
+    clearSelectedLocation();
+    clearSelectedMovie();
+    clearSelectedCinema();
+    clearSelectedHall();
+    setShowtimes([]);
     onClose();
   };
 
@@ -35,12 +57,14 @@ const AddShowtimeModal = ({ open, onClose, selectedDate }) => {
     <Dialog
       open={open}
       handler={onClose}
-      size="sm"
-      className="bg-white rounded-lg shadow-xl"
+      size="lg"
+      className="bg-white rounded-lg shadow-xl max-w-3xl h-fit-screen"
     >
-      <form onSubmit={handleAddShowtime}>
+      <form onSubmit={handleSaveAllShowtimes}>
         <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Add Showtime</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">
+            Add Multiple Showtimes
+          </h3>
 
           <label
             htmlFor="movie"
@@ -72,9 +96,8 @@ const AddShowtimeModal = ({ open, onClose, selectedDate }) => {
             selected={startTime}
             onChange={date => setStartTime(date)}
             showTimeSelect
-            dateFormat="MMMM d, yyyy h:mm aa" // định dạng hiển thị
-            timeFormat="HH:mm"
-            timeIntervals={10} // Chọn khoảng thời gian mỗi 10 phút
+            dateFormat="MMMM d, yyyy h:mm aa"
+            timeIntervals={10}
             className="block w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
           />
 
@@ -94,16 +117,33 @@ const AddShowtimeModal = ({ open, onClose, selectedDate }) => {
 
           <div className="flex justify-between items-center mt-4 gap-4">
             <Button
-              color="blue"
-              onClick={handleAddShowtime}
-              disabled={!selectedMovie}
+              color="green"
+              onClick={addShowtimeToList}
+              disabled={!selectedMovie || !price}
               className="w-full"
             >
-              Add Showtime
+              Add to List
             </Button>
-            <Button color="red" onClick={onClose} className="w-full">
+            <Button
+              color="blue"
+              type="submit"
+              disabled={showtimes.length === 0}
+              className="w-full"
+            >
+              Save All Showtimes
+            </Button>
+            <Button color="red" onClick={handleCancel} className="w-full">
               Cancel
             </Button>
+          </div>
+
+          <div className="mt-4 max-h-40 overflow-y-auto space-y-2">
+            {showtimes.map((showtime, index) => (
+              <li key={index} className="p-2 bg-gray-200 rounded-md">
+                {movies.find(movie => movie._id === showtime.movie)?.title} -{' '}
+                {showtime.startTime.toLocaleString()} - ${showtime.price}
+              </li>
+            ))}
           </div>
         </div>
       </form>
@@ -111,4 +151,8 @@ const AddShowtimeModal = ({ open, onClose, selectedDate }) => {
   );
 };
 
+AddShowtimeModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 export default AddShowtimeModal;

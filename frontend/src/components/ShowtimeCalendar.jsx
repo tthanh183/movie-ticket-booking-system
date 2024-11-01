@@ -23,9 +23,9 @@ const ShowtimeCalendar = () => {
   const events = useMemo(
     () =>
       showtimes.map(showtime => ({
-        title: showtime.movie.title || 'No Title',
+        title: showtime.movie.title,
         start: new Date(showtime.startTime),
-        end: new Date(showtime.startTime),
+        end: new Date(showtime.endTime),
         allDay: false,
       })),
     [showtimes]
@@ -42,22 +42,29 @@ const ShowtimeCalendar = () => {
 
   return (
     <div className="p-8">
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        selectable
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={event => alert(`Selected event: ${event.title}`)}
-      />
-
-      <AddShowtimeModal
-        open={modalOpen}
-        onClose={handleCloseForm}
-        selectedDate={selectedDate}
-      />
+      {selectedHall ? (
+        <>
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 500 }}
+            selectable
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={event => alert(`Selected event: ${event.title}`)}
+          />
+          <AddShowtimeModal
+            open={modalOpen}
+            onClose={handleCloseForm}
+            selectedDate={selectedDate}
+          />
+        </>
+      ) : (
+        <div className="text-center text-gray-500">
+          <p>Please select a hall to view its showtimes.</p>
+        </div>
+      )}
     </div>
   );
 };

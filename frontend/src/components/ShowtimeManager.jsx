@@ -6,11 +6,9 @@ import { useLocationsStore } from '../stores/useLocationsStore';
 import { useMovieStore } from '../stores/useMovieStore';
 import { useCinemaStore } from '../stores/useCinemaStore';
 import { useHallStore } from '../stores/useHallStore';
-import { useShowtimeStore } from '../stores/useShowtimeStore';
 
 const ShowtimeManager = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedShowtime, setSelectedShowtime] = useState(null);
 
   const { locations, selectedLocation, getLocations, setSelectedLocation } =
     useLocationsStore();
@@ -19,7 +17,6 @@ const ShowtimeManager = () => {
     useCinemaStore();
   const { halls, selectedHall, getHallsByCinema, setSelectedHall } =
     useHallStore();
-  const { showtimes, getShowtimesByHall } = useShowtimeStore();
 
   useEffect(() => {
     getLocations();
@@ -29,12 +26,15 @@ const ShowtimeManager = () => {
   useEffect(() => {
     if (selectedLocation) getCinemasByLocation(selectedLocation._id);
     if (selectedCinema) getHallsByCinema(selectedCinema._id);
-    if (selectedHall) getShowtimesByHall(selectedHall._id);
-  }, [selectedLocation, selectedCinema, selectedHall, getCinemasByLocation, getHallsByCinema, getShowtimesByHall]);
+  }, [
+    selectedLocation,
+    selectedCinema,
+    getCinemasByLocation,
+    getHallsByCinema,
+  ]);
 
   const handleCloseForm = () => {
     setModalOpen(false);
-    setSelectedShowtime(null);
   };
 
   return (
@@ -97,24 +97,17 @@ const ShowtimeManager = () => {
               disabled={!selectedHall}
               className="mt-4"
             >
-              Add Showtime
+              Add Showtimes
             </Button>
           </div>
         </div>
 
         <div className="w-3/4 p-4 bg-white shadow-lg">
-          <ShowtimeCalendar
-            showtimesData={showtimes}
-            onEdit={setSelectedShowtime}
-          />
+          <ShowtimeCalendar />
         </div>
       </div>
 
-      <AddShowtimeModal
-        open={modalOpen}
-        onClose={handleCloseForm}
-        selectedShowtime={selectedShowtime}
-      />
+      <AddShowtimeModal open={modalOpen} onClose={handleCloseForm} />
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { useLocationsStore } from '../stores/useLocationsStore';
 import DeleteModal from './DeleteModal';
 import HallManager from './HallManager';
 import CustomSkeleton from './CustomSkeleton';
+import { useHallStore } from '../stores/useHallStore';
 
 const CinemaList = ({
   openForm,
@@ -23,6 +24,7 @@ const CinemaList = ({
     setSelectedCinema,
     clearSelectedCinema,
   } = useCinemaStore();
+  const { clearSelectedHall } = useHallStore();
   useEffect(() => {
     getLocations();
   }, [getLocations]);
@@ -39,6 +41,7 @@ const CinemaList = ({
   const handleOpenHallManagement = cinema => {
     openForm(false);
     setSelectedCinema(cinema);
+    clearSelectedHall();
     setOpenHallManagement(true);
   };
 
