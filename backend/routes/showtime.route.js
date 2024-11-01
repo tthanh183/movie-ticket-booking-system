@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/halls/:hallId', getShowtimesByHallId);
 router.get('/movies/:movieId', getShowtimesByMovieId);
-router.post('/',protectRoute, adminRoute, createShowTimes);
+router.post('/halls/:hallId', protectRoute, adminRoute, createShowTimes);
 router.get('/:id', );
 
 export default router;

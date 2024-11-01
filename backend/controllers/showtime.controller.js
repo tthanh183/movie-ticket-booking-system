@@ -3,7 +3,7 @@ import Hall from '../models/hall.model.js';
 import errorCreator from '../utils/errorCreator.js';
 import Movie from '../models/movie.model.js';
 
-export const getShowtimesByHallId = async (req, res) => {
+export const getShowtimesByHallId = async (req, res, next) => {
   const { hallId } = req.params;
   try {
     const showtimes = await Showtime.find({ hall: hallId }).populate('movie');
@@ -11,12 +11,12 @@ export const getShowtimesByHallId = async (req, res) => {
       success: true,
       showtimes,
     });
-
   } catch (error) {
     errorCreator(error, res);
   }
 };
-export const getShowtimesByMovieId = async (req, res) => {
+
+export const getShowtimesByMovieId = async (req, res, next) => {
   const { movie } = req.params;
   try {
     const showtimes = await Showtime.find({ movie });
@@ -28,30 +28,43 @@ export const getShowtimesByMovieId = async (req, res) => {
     errorCreator(error, res);
   }
 };
-export const createShowTimes = async (req, res) => {
+
+
+export const createShowTimes = async (req, res, next) => {
   const { hall, movie, startTime, price } = req.body;
 
   try {
     const movieExists = await Movie.findById(movie);
     if (!movieExists) {
-      return res.status(404).json({
-        success: false,
-        message: 'Movie not found',
-      });
+      return next(errorCreator('Movie not found', 404));
     }
+
     const hallExists = await Hall.findById(hall);
     if (!hallExists) {
-      return res.status(404).json({
-        success: false,
-        message: 'Hall not found',
-      });
+      return next(errorCreator('Hall not found', 404));
     }
     const availableSeats = hallExists.totalSeats;
+
+    const duration = movieExists.duration; 
+    const startTimeDate = new Date(startTime);
+    const endTime = new Date(startTimeDate.getTime() + duration * 60000); 
+
+    const conflictingShowtimes = await Showtime.find({
+      hall,
+      $or: [{ startTime: { $lt: endTime }, endTime: { $gt: startTimeDate } }],
+    });
+
+    if (conflictingShowtimes.length > 0) {
+      return next(
+        errorCreator('Showtime conflicts with existing showtime', 400)
+      );
+    }
 
     const showtime = await Showtime.create({
       hall,
       movie,
       startTime,
+      endTime, 
       price,
       availableSeats,
     });
@@ -66,3 +79,4 @@ export const createShowTimes = async (req, res) => {
     next(error);
   }
 };
+

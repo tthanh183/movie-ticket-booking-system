@@ -17,6 +17,10 @@ const showtimeSchema = new mongoose.Schema(
       type: Date,
       required: [true, 'Start time is required'],
     },
+    endTime: {
+      type: Date,
+      required: [true, 'End time is required'],
+    },
     price: {
       type: Number,
       required: [true, 'Price is required'],
