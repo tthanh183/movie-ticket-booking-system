@@ -4,13 +4,12 @@ import { useMovieStore } from '../stores/useMovieStore';
 
 const MovieDetailPage = () => {
   const { id } = useParams();
-  const { selectedMovie, getMovieById } = useMovieStore();
+  const { movies, selectedMovie, getMovieById } = useMovieStore();
 
   useEffect(() => {
     getMovieById(id);
   }, [id, getMovieById]);
 
-  // Mock reviews data
   const reviews = [
     {
       user: 'Alice',
@@ -25,16 +24,7 @@ const MovieDetailPage = () => {
     },
   ];
 
-  const similarMovies = [
-    {
-      title: 'The Iron Giant',
-      posterUrl: 'https://example.com/path/to/iron_giant.jpg',
-    },
-    {
-      title: 'Wall-E',
-      posterUrl: 'https://example.com/path/to/wall_e.jpg',
-    },
-  ];
+  const similarMovies = movies.filter(movie => movie._id !== id);
 
   return (
     <div className="container mx-auto my-10 p-5 bg-white rounded-lg shadow-lg">
@@ -79,7 +69,7 @@ const MovieDetailPage = () => {
             </p>
           </div>
           <div>
-            <button className="bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition shadow-md">
+            <button className="bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition shadow-md">
               Book Tickets
             </button>
           </div>
@@ -117,16 +107,16 @@ const MovieDetailPage = () => {
         <h2 className="text-3xl font-semibold text-gray-800 mb-6">
           You Might Also Like
         </h2>
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-wrap justify-around gap-6">
           {similarMovies.map((movie, index) => (
             <div
               key={index}
               className="w-32 bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-200 hover:scale-105"
             >
               <img
-                src={movie.posterUrl}
+                src={movie.poster}
                 alt={movie.title}
-                className="w-full h-40 object-contain" // Change object-cover to object-contain
+                className="w-full h-40 object-contain"
               />
               <div className="p-3 text-center">
                 <h3 className="text-lg font-semibold text-gray-800">
