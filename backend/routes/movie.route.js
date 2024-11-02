@@ -3,6 +3,7 @@ import express from 'express';
 import { protectRoute, adminRoute } from '../middlewares/auth.middleware.js';
 import {
   toggleShowingMovie,
+  getAllShowingMovies,
   getAllMovies,
   getMovieById,
   createMovie,
@@ -12,7 +13,8 @@ import {
 const router = express.Router();
 
 router.put('/:movieId/showing', protectRoute, adminRoute, toggleShowingMovie);
-router.get('/', protectRoute, adminRoute, getAllMovies);
+router.get('/', getAllShowingMovies);
+router.get('/all', protectRoute, adminRoute, getAllMovies);
 router.get('/:movieId', getMovieById);
 router.post('/', protectRoute, adminRoute, createMovie);
 router.put('/:movieId', protectRoute, adminRoute, updateMovie);
