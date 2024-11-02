@@ -9,13 +9,14 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import { Toaster } from 'react-hot-toast';
 import AdminPage from './pages/AdminPage';
+import MovieDetailPage from './pages/MovieDetailPage';
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
 
   useEffect(() => {
     checkAuth();
-    
+
   }, [checkAuth]);
 
   if (checkingAuth)
@@ -43,6 +44,7 @@ function App() {
             user?.role === 'admin' ? <AdminPage /> : <Navigate to={'/login'} />
           }
         />
+        <Route path='/movie/:id' element={<MovieDetailPage/>}/>
       </Routes>
       <Toaster className="z-50"/>
     </div>

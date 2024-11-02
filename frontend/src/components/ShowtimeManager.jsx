@@ -12,7 +12,7 @@ const ShowtimeManager = () => {
 
   const { locations, selectedLocation, getLocations, setSelectedLocation } =
     useLocationsStore();
-  const { getMovies } = useMovieStore();
+  const { getShowingMovies } = useMovieStore();
   const { cinemas, selectedCinema, getCinemasByLocation, setSelectedCinema } =
     useCinemaStore();
   const { halls, selectedHall, getHallsByCinema, setSelectedHall } =
@@ -20,8 +20,8 @@ const ShowtimeManager = () => {
 
   useEffect(() => {
     getLocations();
-    getMovies();
-  }, [getLocations, getMovies]);
+    getShowingMovies();
+  }, [getLocations, getShowingMovies]);
 
   useEffect(() => {
     if (selectedLocation) getCinemasByLocation(selectedLocation._id);

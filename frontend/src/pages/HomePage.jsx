@@ -1,21 +1,26 @@
-import { useMovieStore } from '../stores/useMovieStore';
-import MoviePoster from '../components/MoviePoster';
 import { useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
+import { useMovieStore } from '../stores/useMovieStore';
+import MoviePoster from '../components/MoviePoster';
+import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
-  const { movies, getMovies } = useMovieStore();
+  const { movies, getShowingMovies } = useMovieStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getMovies();
-  }, [getMovies]);
+    getShowingMovies();
+  }, [getShowingMovies]);
+
+  const handlePosterClick = movie => {
+    navigate(`/movie/${movie._id}`);
+  };
 
   return (
     <div className="bg-gray-100">
-      {/* Banner Section */}
       <div
         className="relative bg-cover bg-center h-96"
         style={{ backgroundImage: `url('/path/to/banner-image.jpg')` }}
@@ -34,7 +39,7 @@ const HomePage = () => {
         <h2 className="text-3xl font-bold text-center my-6">MOVIE SELECTION</h2>
         <Swiper
           modules={[Navigation, Pagination, Scrollbar, A11y]}
-          spaceBetween={10} // Giảm khoảng cách giữa các poster
+          spaceBetween={0}
           slidesPerView={4}
           navigation={true}
           pagination={{ clickable: true }}
@@ -44,7 +49,10 @@ const HomePage = () => {
           onSlideChange={() => console.log('slide change')}
         >
           {movies.map(movie => (
-            <SwiperSlide key={movie._id} style={{ width: 'auto' }}>
+            <SwiperSlide
+              key={movie._id}
+              onClick={() => handlePosterClick(movie)}
+            >
               <MoviePoster movie={movie} />
             </SwiperSlide>
           ))}

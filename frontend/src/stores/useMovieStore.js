@@ -5,6 +5,7 @@ import {
   createMovieApi,
   deleteMovieApi,
   getAllMoviesApi,
+  getAllShowingMoviesApi,
   getMovieByIdApi,
   toggleShowingMovieApi,
   updateMovieApi,
@@ -37,7 +38,26 @@ export const useMovieStore = create((set, get) => ({
     }
   },
 
-  getMovies: async () => {
+  getShowingMovies: async () => {
+    set({ movieLoading: true });
+    try {
+      const response = await getAllShowingMoviesApi();
+      if (response.data.success) {
+        set({ movies: response.data.movies });
+      } else {
+        showToast('Failed to fetch movies. Please try again.', 'error');
+      }
+    } catch (error) {
+      showToast(
+        error.response.data.message ||
+          'Something went wrong. Please try again later.'
+      );
+    } finally {
+      set({ movieLoading: false });
+    }
+  },
+
+  getAllMovies: async () => {
     set({ movieLoading: true });
     try {
       const response = await getAllMoviesApi();

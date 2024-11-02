@@ -19,7 +19,7 @@ const MovieManager = () => {
     searchTerm,
     movieLoading,
     toggleShowingMovie,
-    getMovies,
+    getAllMovies,
     setSelectedMovie,
     setFilter,
     setSearchTerm,
@@ -27,8 +27,8 @@ const MovieManager = () => {
   } = useMovieStore();
 
   useEffect(() => {
-    getMovies();
-  }, [getMovies]);
+    getAllMovies();
+  }, [getAllMovies]);
 
   const handleEditMovie = movie => {
     setSelectedMovie(movie);
