@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, Input, Button, Typography } from '@material-tailwind/react';
-
 import { useUserStore } from '../stores/useUserStore';
+
 const LoginPage = () => {
   const [inputs, setInputs] = useState({
     email: '',
@@ -25,12 +25,12 @@ const LoginPage = () => {
       <Card
         color="white"
         shadow={true}
-        className="p-8 w-full max-w-md md:max-w-lg lg:max-w-xl"
+        className="p-8 w-full max-w-md md:max-w-lg lg:max-w-xl rounded-lg border border-gray-300"
       >
         <Typography
           variant="h4"
           color="blue-gray"
-          className="text-center text-black"
+          className="text-center text-black font-semibold mb-2"
         >
           Login
         </Typography>
@@ -52,7 +52,7 @@ const LoginPage = () => {
             <Input
               size="lg"
               placeholder="Email"
-              className="!border-blue-gray-200 focus:!border-blue-500"
+              className="!border-gray-300 focus:!border-blue-500 focus:shadow-lg transition-shadow duration-200"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
@@ -70,7 +70,7 @@ const LoginPage = () => {
               type="password"
               size="lg"
               placeholder="Password"
-              className="!border-blue-gray-200 focus:!border-blue-500"
+              className="!border-gray-300 focus:!border-blue-500 focus:shadow-lg transition-shadow duration-200"
               labelProps={{
                 className: 'before:content-none after:content-none',
               }}
@@ -79,7 +79,7 @@ const LoginPage = () => {
             />
           </div>
           <Button
-            className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
             fullWidth
             disabled={loading}
             type="submit"

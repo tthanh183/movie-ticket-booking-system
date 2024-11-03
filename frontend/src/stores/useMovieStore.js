@@ -78,7 +78,7 @@ export const useMovieStore = create((set, get) => ({
 
   getMovieById: async id => {
     set({ movieLoading: true });
-    try {
+    try {      
       const response = await getMovieByIdApi(id);
       if (response.data.success) {
         set({ selectedMovie: response.data.movie });
