@@ -1,7 +1,9 @@
 import Showtime from '../models/showtime.model.js';
 import Hall from '../models/hall.model.js';
-import errorCreator from '../utils/errorCreator.js';
 import Movie from '../models/movie.model.js';
+import Cinema from '../models/cinema.model.js';
+import Location from '../models/location.model.js';
+import errorCreator from '../utils/errorCreator.js';
 
 export const getShowtimesByHallId = async (req, res, next) => {
   const { hallId } = req.params;
@@ -29,7 +31,6 @@ export const getShowtimesByMovieId = async (req, res, next) => {
   }
 };
 
-
 export const createShowTimes = async (req, res, next) => {
   const { hall, movie, startTime, price } = req.body;
 
@@ -45,9 +46,9 @@ export const createShowTimes = async (req, res, next) => {
     }
     const availableSeats = hallExists.totalSeats;
 
-    const duration = movieExists.duration; 
+    const duration = movieExists.duration;
     const startTimeDate = new Date(startTime);
-    const endTime = new Date(startTimeDate.getTime() + duration * 60000); 
+    const endTime = new Date(startTimeDate.getTime() + duration * 60000);
 
     const conflictingShowtimes = await Showtime.find({
       hall,
@@ -64,7 +65,7 @@ export const createShowTimes = async (req, res, next) => {
       hall,
       movie,
       startTime,
-      endTime, 
+      endTime,
       price,
       availableSeats,
     });
@@ -80,3 +81,46 @@ export const createShowTimes = async (req, res, next) => {
   }
 };
 
+export const getShowtimesByMovieAndLocation = async (req, res, next) => {
+  const { movieId, locationId } = req.params;
+  const { startDate, endDate, minPrice, maxPrice } = req.body;
+  try {
+    const movieExists = await Movie.findById(movieId);
+    if (!movieExists) {
+      return next(errorCreator('Movie not found', 404));
+    }
+
+    const locationExists = await Location.findById(locationId);
+    if (!locationExists) {
+      return next(errorCreator('Location not found', 404));
+    }
+    const cinemas = await Cinema.find({ location: locationId }).select('_id');
+    const cinemaIds = cinemas.map(cinema => cinema._id);
+
+    const halls = await Hall.find({ cinema: { $in: cinemaIds } }).select('_id');
+    const hallIds = halls.map(hall => hall._id);
+
+    const query = {
+      movie: movieId,
+      hall: { $in: hallIds },
+    };
+
+    if (startDate && endDate) {
+      query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    }
+
+    if (minPrice && maxPrice) {
+      query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
+    }
+
+    const showtimes = await Showtime.find(query);
+
+    res.status(200).json({
+      success: true,
+      showtimes,
+    });
+  } catch (error) {
+    console.log('Error in getShowtimesByMovieAndLocation', error);
+    next(error);
+  }
+};
