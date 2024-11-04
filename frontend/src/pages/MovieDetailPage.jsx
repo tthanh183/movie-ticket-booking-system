@@ -1,18 +1,19 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMovieStore } from '../stores/useMovieStore';
 import CustomSkeleton from '../components/CustomSkeleton';
 
 const MovieDetailPage = () => {
-  const { id } = useParams();
+  const { movieId } = useParams();
   const { movies, selectedMovie, movieLoading, getMovieById } = useMovieStore();
-
+  const navigate = useNavigate();
   useEffect(() => {
-    getMovieById(id);
-  }, [id, getMovieById]);
+    getMovieById(movieId);
+  }, [movieId, getMovieById]);
 
-  console.log('Selected Movie:', selectedMovie);
-  console.log('movies:', movies);
+  const handleTicketBooking = () => {
+    navigate(`/ticket-booking/${movieId}`);
+  };
 
   const reviews = [
     {
@@ -28,7 +29,7 @@ const MovieDetailPage = () => {
     },
   ];
 
-  const similarMovies = movies.filter(movie => movie._id !== id);
+  const similarMovies = movies.filter(movie => movie._id !== movieId);
 
   return (
     <>
@@ -83,7 +84,10 @@ const MovieDetailPage = () => {
                 </p>
               </div>
               <div>
-                <button className="bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition shadow-md">
+                <button
+                  className="bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition shadow-md"
+                  onClick={handleTicketBooking}
+                >
                   Book Tickets
                 </button>
               </div>

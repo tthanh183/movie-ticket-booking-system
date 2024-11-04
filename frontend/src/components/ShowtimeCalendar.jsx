@@ -23,9 +23,9 @@ const ShowtimeCalendar = () => {
   const events = useMemo(
     () =>
       showtimes.map(showtime => ({
-        title: showtime.movie.title,
-        start: new Date(showtime.startTime),
-        end: new Date(showtime.endTime),
+        title: showtime?.movie.title,
+        start: new Date(showtime?.startTime),
+        end: new Date(showtime?.endTime),
         allDay: false,
       })),
     [showtimes]

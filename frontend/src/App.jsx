@@ -10,6 +10,7 @@ import SignupPage from './pages/SignupPage';
 import { Toaster } from 'react-hot-toast';
 import AdminPage from './pages/AdminPage';
 import MovieDetailPage from './pages/MovieDetailPage';
+import TicketBookingPage from './pages/TicketBookingPage';
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -44,7 +45,8 @@ function App() {
             user?.role === 'admin' ? <AdminPage /> : <Navigate to={'/login'} />
           }
         />
-        <Route path='/movie/:id' element={<MovieDetailPage/>}/>
+        <Route path='/movie/:movieId' element={<MovieDetailPage/>}/>
+        <Route path='/ticket-booking/:movieId' element={<TicketBookingPage/>}/>
       </Routes>
       <Toaster className="z-50"/>
     </div>

@@ -11,3 +11,13 @@ export const updateShowtimeApi = (showtimeId, showtimeData) =>
 
 export const deleteShowtimeApi = showtimeId =>
   axiosInstance.delete(`/showtimes/${showtimeId}`);
+
+export const getShowtimesByMovieAndLocationApi = (
+  movieId,
+  locationId,
+  filters
+) =>
+  axiosInstance.post(
+    `/showtimes/movies/${movieId}/locations/${locationId}`,
+    filters
+  );
