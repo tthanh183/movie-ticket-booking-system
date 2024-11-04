@@ -83,7 +83,7 @@ export const createShowTimes = async (req, res, next) => {
 
 export const getShowtimesByMovieAndLocation = async (req, res, next) => {
   const { movieId, locationId } = req.params;
-  const { startDate, endDate, minPrice, maxPrice } = req.body;
+  const { date, priceRange } = req.body;
 
   try {
     const movieExists = await Movie.findById(movieId);
@@ -109,13 +109,18 @@ export const getShowtimesByMovieAndLocation = async (req, res, next) => {
       hall: { $in: hallIds },
     };
 
-    if (startDate && endDate) {
-      query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    if (date) {
+      query.startTime = {
+        $gte: new Date(date),
+        $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+      };
     }
-    if (minPrice && maxPrice) {
+
+    if (priceRange) {
+      const [minPrice, maxPrice] = priceRange.split('-').map(Number);
       query.price = {
-        $gte: parseInt(minPrice, 10),
-        $lte: parseInt(maxPrice, 10),
+        $gte: minPrice,
+        $lte: maxPrice,
       };
     }
 
@@ -147,4 +152,3 @@ export const getShowtimesByMovieAndLocation = async (req, res, next) => {
     next(error);
   }
 };
-
