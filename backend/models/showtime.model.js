@@ -10,7 +10,7 @@ const showtimeSchema = new mongoose.Schema(
     },
     hall: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CinemaHall',
+      ref: 'Hall',
       required: true,
     },
     startTime: {

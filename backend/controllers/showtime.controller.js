@@ -84,20 +84,24 @@ export const createShowTimes = async (req, res, next) => {
 export const getShowtimesByMovieAndLocation = async (req, res, next) => {
   const { movieId, locationId } = req.params;
   const { startDate, endDate, minPrice, maxPrice } = req.body;
+
   try {
     const movieExists = await Movie.findById(movieId);
     if (!movieExists) {
       return next(errorCreator('Movie not found', 404));
     }
-
     const locationExists = await Location.findById(locationId);
     if (!locationExists) {
       return next(errorCreator('Location not found', 404));
     }
-    const cinemas = await Cinema.find({ location: locationId }).select('_id');
-    const cinemaIds = cinemas.map(cinema => cinema._id);
 
-    const halls = await Hall.find({ cinema: { $in: cinemaIds } }).select('_id');
+    const cinemas = await Cinema.find({ location: locationId });
+    if (!cinemas.length) {
+      return res.status(200).json({ success: true, showtimesByCinema: [] });
+    }
+
+    const cinemaIds = cinemas.map(cinema => cinema._id);
+    const halls = await Hall.find({ cinema: { $in: cinemaIds } });
     const hallIds = halls.map(hall => hall._id);
 
     const query = {
@@ -108,19 +112,39 @@ export const getShowtimesByMovieAndLocation = async (req, res, next) => {
     if (startDate && endDate) {
       query.startTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
     }
-
     if (minPrice && maxPrice) {
-      query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
+      query.price = {
+        $gte: parseInt(minPrice, 10),
+        $lte: parseInt(maxPrice, 10),
+      };
     }
 
-    const showtimes = await Showtime.find(query);
-
-    res.status(200).json({
-      success: true,
-      showtimes,
+    const showtimes = await Showtime.find(query).populate({
+      path: 'hall',
+      select: 'name cinema',
+      populate: { path: 'cinema', select: 'name' },
     });
+
+    const showtimesByCinema = cinemas.map(cinema => ({
+      cinemaId: cinema._id,
+      cinemaName: cinema.name,
+      showtimes: showtimes
+        .filter(
+          showtime =>
+            showtime.hall &&
+            showtime.hall.cinema &&
+            showtime.hall.cinema._id.toString() === cinema._id.toString()
+        )
+        .map(showtime => ({
+          time: showtime.startTime,
+          price: showtime.price,
+        })),
+    }));
+
+    res.status(200).json({ success: true, showtimesByCinema });
   } catch (error) {
-    console.log('Error in getShowtimesByMovieAndLocation', error);
+    console.error('Error in getShowtimesByMovieAndLocation:', error);
     next(error);
   }
 };
+
