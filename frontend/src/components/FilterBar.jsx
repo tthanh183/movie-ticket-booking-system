@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
+
 const FilterBar = ({ filters, onFilterChange }) => {
-  const handleDateChange = (key, value) => {
-    onFilterChange({ ...filters, [key]: value });
+  const handleDateChange = value => {
+    onFilterChange({ ...filters, date: value });
   };
 
-  const handlePriceChange = (key, value) => {
-    onFilterChange({ ...filters, [key]: value });
+  const handlePriceChange = value => {
+    onFilterChange({ ...filters, priceRange: value });
   };
 
   return (
@@ -12,40 +14,34 @@ const FilterBar = ({ filters, onFilterChange }) => {
       <div className="flex space-x-2">
         <input
           type="date"
-          value={filters.startDate || ''}
-          onChange={e => handleDateChange('startDate', e.target.value)}
+          value={filters.date || ''}
+          onChange={e => handleDateChange(e.target.value)}
           className="p-2 border rounded"
-          placeholder="Start Date"
-        />
-        <input
-          type="date"
-          value={filters.endDate || ''}
-          onChange={e => handleDateChange('endDate', e.target.value)}
-          className="p-2 border rounded"
-          placeholder="End Date"
+          placeholder="Select Date"
         />
       </div>
 
       <div className="flex space-x-2">
-        <input
-          type="number"
-          min="0"
-          placeholder="Min Price"
-          value={filters.minPrice || ''}
-          onChange={e => handlePriceChange('minPrice', e.target.value)}
+        <select
+          value={filters.priceRange || ''}
+          onChange={e => handlePriceChange(e.target.value)}
           className="p-2 border rounded"
-        />
-        <input
-          type="number"
-          min="0"
-          placeholder="Max Price"
-          value={filters.maxPrice || ''}
-          onChange={e => handlePriceChange('maxPrice', e.target.value)}
-          className="p-2 border rounded"
-        />
+        >
+          <option value="">Select Price Range</option>
+          <option value="0-50">$0 - $50</option>
+          <option value="51-100">$51 - $100</option>
+          <option value="101-150">$101 - $150</option>
+          <option value="151-200">$151 - $200</option>
+          <option value="200+">$200+</option>
+        </select>
       </div>
     </div>
   );
+};
+
+FilterBar.propTypes = {
+  filters: PropTypes.object.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
 };
 
 export default FilterBar;

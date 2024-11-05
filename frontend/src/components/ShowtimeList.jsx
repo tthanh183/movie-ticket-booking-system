@@ -1,4 +1,4 @@
-import { trusted } from "mongoose";
+import PropTypes from 'prop-types';
 
 const ShowtimeList = ({ showtimesByCinema = [] }) => {
   const formatTime = timestamp => {
@@ -8,6 +8,10 @@ const ShowtimeList = ({ showtimesByCinema = [] }) => {
       minute: '2-digit',
       hour12: true,
     });
+  };
+
+  const handleBooking = showtime => {
+    console.log(`Booking for showtime: ${showtime.startTime}`);
   };
   
   return (
@@ -40,9 +44,10 @@ const ShowtimeList = ({ showtimesByCinema = [] }) => {
   );
 };
 
-// Example function to handle booking (implement as needed)
-const handleBooking = showtime => {
-  console.log(`Booking for showtime: ${showtime.startTime}`);
+
+
+ShowtimeList.propTypes = {
+  showtimesByCinema: PropTypes.array,
 };
 
 export default ShowtimeList;

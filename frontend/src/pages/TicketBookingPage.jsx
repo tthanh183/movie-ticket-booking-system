@@ -11,10 +11,8 @@ const TicketBookingPage = () => {
   const { movieId } = useParams();
 
   const [filters, setFilters] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-    minPrice: '',
-    maxPrice: '',
+    date: new Date(),
+    priceRange: '',
   });
 
   const { locations, selectedLocation, getLocations, setSelectedLocation } =
