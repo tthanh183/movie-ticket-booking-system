@@ -141,6 +141,7 @@ export const getShowtimesByMovieAndLocation = async (req, res, next) => {
             showtime.hall.cinema._id.toString() === cinema._id.toString()
         )
         .map(showtime => ({
+          id: showtime._id,
           time: showtime.startTime,
           price: showtime.price,
         })),
@@ -150,5 +151,21 @@ export const getShowtimesByMovieAndLocation = async (req, res, next) => {
   } catch (error) {
     console.error('Error in getShowtimesByMovieAndLocation:', error);
     next(error);
+  }
+};
+
+export const getShowtimeById = async (req, res, next) => {
+  const { showtimeId } = req.params;  
+  try {
+    const showtime = await Showtime.findById(showtimeId);
+    if (!showtime) {
+      return next(errorCreator('Showtime not found', 404));
+    }
+    res.status(200).json({
+      success: true,
+      showtime,
+    });
+  } catch (error) {
+    errorCreator(error, res);
   }
 };

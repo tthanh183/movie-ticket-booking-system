@@ -6,9 +6,11 @@ import {
   getShowtimesByHallId,
   getShowtimesByMovieId,
   getShowtimesByMovieAndLocation,
+  getShowtimeById,
 } from '../controllers/showtime.controller.js';
 const router = express.Router();
 
+router.get('/:showtimeId', getShowtimeById);
 router.get('/halls/:hallId', getShowtimesByHallId);
 router.get('/movies/:movieId', getShowtimesByMovieId);
 router.post(
@@ -16,6 +18,5 @@ router.post(
   getShowtimesByMovieAndLocation
 );
 router.post('/halls/:hallId', protectRoute, adminRoute, createShowTimes);
-router.get('/:id', );
 
 export default router;
