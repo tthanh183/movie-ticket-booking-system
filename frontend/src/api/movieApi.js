@@ -1,13 +1,13 @@
 import axiosInstance from '../lib/axiosInstance';
 
-export const toggleShowingMovieApi = async movieId =>
+export const toggleShowingMovieApi = movieId =>
   axiosInstance.put(`/movies/${movieId}/showing/`);
-export const getAllShowingMoviesApi = async () => axiosInstance.get('/movies');
-export const getAllMoviesApi = async () => axiosInstance.get('/movies/all');
-export const getMovieByIdApi = async movieId =>
+export const getAllShowingMoviesApi = () => axiosInstance.get('/movies');
+export const getAllMoviesApi = () => axiosInstance.get('/movies/all');
+export const getMovieByIdApi = movieId =>
   axiosInstance.get(`/movies/${movieId}`);
-export const createMovieApi = async data => axiosInstance.post('/movies', data);
-export const updateMovieApi = async (movieId, data) =>
+export const createMovieApi = data => axiosInstance.post('/movies', data);
+export const updateMovieApi = (movieId, data) =>
   axiosInstance.put(`/movies/${movieId}`, data);
-export const deleteMovieApi = async movieId =>
+export const deleteMovieApi = movieId =>
   axiosInstance.delete(`/movies/${movieId}`);

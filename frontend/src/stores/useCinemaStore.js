@@ -171,6 +171,7 @@ export const useCinemaStore = create((set, get) => ({
       set({ cinemaLoading: false });
     }
   },
+
   setSelectedCinema: cinema => set({ selectedCinema: cinema }),
   clearSelectedCinema: () => set({ selectedCinema: null }),
 }));

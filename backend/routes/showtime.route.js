@@ -7,6 +7,8 @@ import {
   getShowtimesByMovieId,
   getShowtimesByMovieAndLocation,
   getShowtimeById,
+  bookSeats,
+  confirmPayment,
 } from '../controllers/showtime.controller.js';
 const router = express.Router();
 
@@ -18,5 +20,6 @@ router.post(
   getShowtimesByMovieAndLocation
 );
 router.post('/halls/:hallId', protectRoute, adminRoute, createShowTimes);
-
+router.patch('/:showtimeId/seats/book', protectRoute, bookSeats);
+router.get('/payment/confirm', protectRoute, confirmPayment);
 export default router;

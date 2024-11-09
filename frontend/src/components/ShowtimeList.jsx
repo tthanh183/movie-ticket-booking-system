@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const ShowtimeList = ({ showtimesByCinema = [] }) => {
+  const navigate = useNavigate();
+
   const formatTime = timestamp => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], {
@@ -11,8 +14,10 @@ const ShowtimeList = ({ showtimesByCinema = [] }) => {
   };
 
   const handleBooking = showtime => {
-    console.log(`Booking for showtime: ${showtime.startTime}`);
+    // Navigate to the seat selection page for this showtime
+    navigate(`/seat-selection/${showtime.id}`);
   };
+
   
   return (
     <div className="space-y-8 p-6 bg-gray-100 rounded-lg shadow-md">

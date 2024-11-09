@@ -11,13 +11,14 @@ import { Toaster } from 'react-hot-toast';
 import AdminPage from './pages/AdminPage';
 import MovieDetailPage from './pages/MovieDetailPage';
 import TicketBookingPage from './pages/TicketBookingPage';
+import SeatSelectionPage from './pages/SeatSelectionPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
 
   useEffect(() => {
     checkAuth();
-
   }, [checkAuth]);
 
   if (checkingAuth)
@@ -45,10 +46,19 @@ function App() {
             user?.role === 'admin' ? <AdminPage /> : <Navigate to={'/login'} />
           }
         />
-        <Route path='/movie/:movieId' element={<MovieDetailPage/>}/>
-        <Route path='/ticket-booking/:movieId' element={<TicketBookingPage/>}/>
+        <Route path="/movie/:movieId" element={<MovieDetailPage />} />
+        <Route
+          path="/ticket-booking/:movieId"
+          element={<TicketBookingPage />}
+        />
+        <Route
+          path="/seat-selection/:showtimeId"
+          element={user ? <SeatSelectionPage /> : <Navigate to="/login" />}
+        />
+        <Route path="/payment-success" element={<PaymentSuccessPage />} />
+        <Route path="/payment-cancel" element={<HomePage />} />{' '}
       </Routes>
-      <Toaster className="z-50"/>
+      <Toaster className="z-50" />
     </div>
   );
 }

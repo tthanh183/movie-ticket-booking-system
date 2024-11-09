@@ -5,6 +5,8 @@ import Cinema from '../models/cinema.model.js';
 import Location from '../models/location.model.js';
 import errorCreator from '../utils/errorCreator.js';
 
+import { stripe } from '../lib/stripe.js';
+
 export const getShowtimesByHallId = async (req, res, next) => {
   const { hallId } = req.params;
   try {
@@ -44,7 +46,6 @@ export const createShowTimes = async (req, res, next) => {
     if (!hallExists) {
       return next(errorCreator('Hall not found', 404));
     }
-    const availableSeats = hallExists.totalSeats;
 
     const duration = movieExists.duration;
     const startTimeDate = new Date(startTime);
@@ -61,13 +62,21 @@ export const createShowTimes = async (req, res, next) => {
       );
     }
 
+    const seatsStatus = hallExists.seatLayout.map(rowItem => ({
+      row: rowItem.row,
+      seats: rowItem.seats.map(seat => ({
+        col: seat.col,
+        status: 'available',
+      })),
+    }));
+
     const showtime = await Showtime.create({
       hall,
       movie,
       startTime,
       endTime,
       price,
-      availableSeats,
+      seatsStatus,
     });
 
     res.status(201).json({
@@ -155,9 +164,13 @@ export const getShowtimesByMovieAndLocation = async (req, res, next) => {
 };
 
 export const getShowtimeById = async (req, res, next) => {
-  const { showtimeId } = req.params;  
+  const { showtimeId } = req.params;
+  
   try {
-    const showtime = await Showtime.findById(showtimeId);
+    const showtime = await Showtime.findById(showtimeId).populate(
+      'hall',
+      'seatLayout'
+    );
     if (!showtime) {
       return next(errorCreator('Showtime not found', 404));
     }
@@ -166,6 +179,136 @@ export const getShowtimeById = async (req, res, next) => {
       showtime,
     });
   } catch (error) {
-    errorCreator(error, res);
+    console.log('Error in getShowtimeById', error);
+    next(error);
+  }
+};
+
+export const bookSeats = async (req, res, next) => {
+  const { showtimeId } = req.params;
+  const { seats } = req.body;
+
+  try {
+    const showtime = await Showtime.findById(showtimeId);
+    if (!showtime) {
+      return next(errorCreator('Showtime not found', 404));
+    }
+
+    const hall = await Hall.findById(showtime.hall);
+    if (!hall) {
+      return next(errorCreator('Hall not found', 404));
+    }
+
+    if (!showtime.seatsStatus || showtime.seatsStatus.length === 0) {
+      showtime.seatsStatus = hall.seatLayout.map(rowItem => ({
+        row: rowItem.row,
+        seats: rowItem.seats.map(seat => ({
+          col: seat.col,
+          status: 'available',
+        })),
+      }));
+    }
+
+    for (let seatRequest of seats) {
+      const rowItem = showtime.seatsStatus.find(
+        seat => seat.row === Number(seatRequest.row)
+      );
+      if (!rowItem) {
+        return next(errorCreator(`Row ${seatRequest.row} not found`, 404));
+      }
+
+      const seat = rowItem.seats.find(s => s.col === Number(seatRequest.col));
+      if (!seat) {
+        return next(errorCreator(`Seat ${seatRequest.col} not found`, 404));
+      }
+
+      if (seat.status === 'booked') {
+        return next(
+          errorCreator(
+            `Seat ${seatRequest.row}-${seatRequest.col} is already booked`,
+            400
+          )
+        );
+      }
+
+      if ((seat.status = 'available')) {
+        seat.status = 'blocked';
+      }
+    }
+
+    await showtime.save();
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: seats.map(seatRequest => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `Seat ${seatRequest.row}-${seatRequest.col}`,
+          },
+          unit_amount: showtime.price * 100,
+        },
+        quantity: 1,
+      })),
+      mode: 'payment',
+      success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
+      metadata: {
+        showtimeId: showtime._id.toString(),
+        seats: JSON.stringify(seats),
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Your seats are blocked for 10 minutes',
+      checkout_url: session.url,
+    });
+  } catch (error) {
+    console.log('Error in bookSeats', error);
+    next(error);
+  }
+};
+
+export const confirmPayment = async (req, res, next) => {
+  const { session_id } = req.query;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    
+    const seats = JSON.parse(session.metadata.seats);
+
+    const showtime = await Showtime.findById(session.metadata.showtimeId);
+    if (!showtime) {
+      return next(errorCreator('Showtime not found', 404));
+    }
+
+    for (let seatRequest of seats) {
+      const rowItem = showtime.seatsStatus.find(
+        seat => seat.row === Number(seatRequest.row)
+      );
+      if (!rowItem) {
+        return next(errorCreator(`Row ${seatRequest.row} not found`, 404));
+      }
+
+      const seat = rowItem.seats.find(s => s.col === Number(seatRequest.col));
+      if (!seat) {
+        return next(errorCreator(`Seat ${seatRequest.col} not found`, 404));
+      }
+
+      if (seat.status === 'blocked') {
+        seat.status = 'booked';
+      }
+    }
+
+    await showtime.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Seats booked successfully',
+    });
+  } catch (error) {
+    console.log('Error in confirmPayment', error);
+    next(error);
   }
 };

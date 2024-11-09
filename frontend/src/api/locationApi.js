@@ -1,4 +1,4 @@
 import axiosInstance from '../lib/axiosInstance';
 
-export const getAllLocationsApi = async () => axiosInstance.get('/locations');
-export const createLocationApi = async (location) => axiosInstance.post('/locations', location);
+export const getAllLocationsApi = () => axiosInstance.get('/locations');
+export const createLocationApi = (location) => axiosInstance.post('/locations', location);

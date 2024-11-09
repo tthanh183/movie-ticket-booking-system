@@ -1,7 +1,12 @@
 import { create } from 'zustand';
 
 import showToast from '../lib/showToast';
-import { createShowtimeApi, getShowtimeByHallIdApi, getShowtimesByMovieAndLocationApi } from '../api/showtimeApi';
+import {
+  createShowtimeApi,
+  getShowtimeByHallIdApi,
+  getShowtimeByIdApi,
+  getShowtimesByMovieAndLocationApi,
+} from '../api/showtimeApi';
 
 export const useShowtimeStore = create((set, get) => ({
   showtimes: [],
@@ -11,18 +16,35 @@ export const useShowtimeStore = create((set, get) => ({
   getShowtimesByHall: async hallId => {
     set({ showtimeLoading: true });
     try {
-      console.log(hallId);
       const response = await getShowtimeByHallIdApi(hallId);
 
       if (response.data.success) {
         set({ showtimes: response.data.showtimes });
-        console.log(response.data.showtimes);
       } else {
         showToast('Failed to fetch showtimes. Please try again.', 'error');
       }
     } catch (error) {
       showToast(
         error.response.data.message ||
+          'Something went wrong. Please try again later.'
+      );
+    } finally {
+      set({ showtimeLoading: false });
+    }
+  },
+
+  getShowtimeById: async showtimeId => {
+    set({ showtimeLoading: true });
+    try {
+      const response = await getShowtimeByIdApi(showtimeId);
+      if (response.data.success) {
+        set({ selectedShowtime: response.data.showtime });
+      } else {
+        showToast('Failed to fetch showtime. Please try again.', 'error');
+      }
+    } catch (error) {
+      showToast(
+        error.response?.data?.message ||
           'Something went wrong. Please try again later.'
       );
     } finally {

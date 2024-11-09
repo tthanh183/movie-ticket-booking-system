@@ -25,7 +25,7 @@ const hallSchema = new mongoose.Schema(
             col: Number,
             status: {
               type: String,
-              enum: ['available', 'booked', 'blocked'],
+              enum: ['available', 'unavailable'],
               default: 'available',
             },
           },

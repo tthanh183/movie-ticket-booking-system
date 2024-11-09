@@ -28,12 +28,16 @@ const showtimeSchema = new mongoose.Schema(
     seatsStatus: [
       {
         row: Number,
-        col: Number,
-        status: {
-          type: String,
-          enum: ['available', 'booked', 'blocked'],
-          default: 'available',
-        },
+        seats: [
+          {
+            col: Number,
+            status: {
+              type: String,
+              enum: ['available', 'booked', 'blocked'],
+              default: 'available',
+            },
+          },
+        ],
       },
     ],
   },
