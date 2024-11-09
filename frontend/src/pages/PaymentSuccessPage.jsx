@@ -7,7 +7,7 @@ const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const sessionId = new URLSearchParams(location.search).get('session_id');
-    
+
   useEffect(() => {
     let timeout;
 
@@ -17,15 +17,16 @@ const PaymentSuccessPage = () => {
 
         if (response.data.success) {
           toast.success('Payment successful! Seats have been booked.');
-          navigate('/'); 
+          navigate('/');
         } else {
           throw new Error('Payment could not be confirmed.');
         }
       } catch (error) {
         toast.error(
-          'Payment failed or session expired. Redirecting to homepage.'
+          error.response?.data?.message ||
+            'Error confirming payment. Redirecting to homepage.'
         );
-        navigate('/'); 
+        navigate('/');
       }
     };
 
@@ -34,8 +35,8 @@ const PaymentSuccessPage = () => {
 
       timeout = setTimeout(() => {
         toast.error('Payment session expired. Redirecting to homepage.');
-        navigate('/'); 
-      }, 600000); 
+        navigate('/');
+      }, 600000);
     } else {
       toast.error('Invalid session. Redirecting to homepage.');
       navigate('/');
